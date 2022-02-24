@@ -2,7 +2,7 @@
 
 #include <utils/conversions.h>
 
-namespace cld {
+namespace lnrr {
 
 MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
     MatrixX3 RT = MatrixX3::Zero(3 * G.rows(), 3);
@@ -72,4 +72,4 @@ SparseMatrix computeH(const int& M, const Vector& line_sizes) {
     return H;
 }
 
-} // namespace cld
+} // namespace lnrr

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(cld)
+project(lnrr)
 set (${PROJECT_NAME}_VERSION_MAJOR 1)
 set (${PROJECT_NAME}_VERSION_MINOR 0)
 set(CMAKE_CXX_STANDARD 17) # avoid using EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -14,7 +14,7 @@ find_package(Eigen3 3.1 REQUIRED)
 message(STATUS "[fgt] Eigen3 version: ${EIGEN3_VERSION}")
 
 add_library(Library-C++
-    src/cld.cpp
+    src/scan_to_model.cpp
 )
 target_include_directories(Library-C++
     PUBLIC

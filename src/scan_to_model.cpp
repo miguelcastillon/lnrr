@@ -1,13 +1,13 @@
-#include <cld.h>
+#include <scan_to_model.h>
 
-namespace cld {
+namespace lnrr {
 
-Matrix CLD::getTransformedMoving() {
+Matrix ScanToModel::getTransformedMoving() {
     RT_ = computeRotationMatrices(G_, U_);
     return C_ + D_ * RT_;
 }
 
-void CLD::computeP() {
+void ScanToModel::computeP() {
     double ksig = -2.0 * sigma2_;
     size_t cols = fixed_.cols();
     double outlier_tmp = (outliers_ * moving_transformed_.rows() *
@@ -49,7 +49,7 @@ void CLD::computeP() {
     P_ = {p1, pt1, px, l};
 }
 
-void CLD::computeP_FGT() {
+void ScanToModel::computeP_FGT() {
     /// TODO: how to use threshold_truncate?
     double bandwidth = std::sqrt(2.0 * sigma2_);
     size_t cols = fixed_.cols();
@@ -93,7 +93,7 @@ void CLD::computeP_FGT() {
 
 /// TODO: Are we sure this sigma equals to equation in Fig. 2 of [Myronenko
 /// 2010] ??
-double CLD::defaultSigma2() {
+double ScanToModel::defaultSigma2() {
     return ((moving_.rows() * (fixed_.transpose() * fixed_).trace()) +
             (fixed_.rows() * (moving_.transpose() * moving_).trace()) -
             2 * fixed_.colwise().sum() * moving_.colwise().sum().transpose()) /
@@ -101,14 +101,15 @@ double CLD::defaultSigma2() {
            1000.; // 1000 here is a magic number
 }
 
-double CLD::computeOptimalRotationCeres(const Matrix& S, const Matrix& T) {
+double ScanToModel::computeOptimalRotationCeres(const Matrix& S,
+                                                const Matrix& T) {
     ceres::Problem problem;
     ceres::LossFunction* loss = NULL;
 
     /// TODO: stride size? =4?
-    ceres::DynamicAutoDiffCostFunction<CostFunctionCLDRot, 4>* cost =
-        new ceres::DynamicAutoDiffCostFunction<CostFunctionCLDRot, 4>(
-            new CostFunctionCLDRot(G_, S, T, lambda_));
+    ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>* cost =
+        new ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>(
+            new CostFunctionScanToModelRot(G_, S, T, lambda_));
     std::vector<double*> parameter_blocks;
     parameter_blocks.push_back(U_.data());
     cost->AddParameterBlock(U_.size());
@@ -136,14 +137,13 @@ double CLD::computeOptimalRotationCeres(const Matrix& S, const Matrix& T) {
     return summary.final_cost;
 }
 
-void CLD::computeU() {
+void ScanToModel::computeU() {
     Matrix lhs =
         sigma2_ * lambda_ * Matrix::Identity(number_lines_, number_lines_) +
-        (FT_ * P_.p1).asDiagonal() * G_;
+        FT_ * P_.p1.asDiagonal() * F_ * G_;
 
     A_ = lhs.partialPivLu().solve(FT_ * P_.px);
-    B_ = lhs.partialPivLu().solve(
-        Matrix(matrixAsSparseBlockDiag(FT_ * P_.p1.asDiagonal() * moving_)));
+    B_ = lhs.partialPivLu().solve(Matrix(FT_ * P_.p1.asDiagonal() * YD_));
     GB_ = G_ * B_;
 
     /// TODO: Why does a sparse D give better results?
@@ -156,7 +156,7 @@ void CLD::computeU() {
     double cost_aux = computeOptimalRotationCeres(S, T);
 }
 
-void CLD::computeSigma2() {
+void ScanToModel::computeSigma2() {
     sigma2_ = 0.0;
     sigma2_ += (fixed_.transpose() * P_.pt1.asDiagonal() * fixed_).trace();
     sigma2_ -= 2 * (P_.px.transpose() * moving_transformed_).trace();
@@ -166,7 +166,7 @@ void CLD::computeSigma2() {
     sigma2_ /= (P_.p1.sum() * 3.0);
 }
 
-void CLD::initialize() {
+void ScanToModel::initialize() {
     assert(fixed_.rows() > 0);
     assert(moving_.rows() > 0);
     M_ = moving_.rows();
@@ -188,14 +188,14 @@ void CLD::initialize() {
     moving_transformed_ = getTransformedMoving();
 }
 
-void CLD::computeOne() {
+void ScanToModel::computeOne() {
     computeP_FGT();
     computeU();
     moving_transformed_ = getTransformedMoving();
     computeSigma2();
 }
 
-Result CLD::run() {
+Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
     initialize();
@@ -212,7 +212,7 @@ Result CLD::run() {
                    std::numeric_limits<double>::epsilon()) // Maybe also if
                                                            // sigma2_ increases?
     {
-        CLD::computeOne();
+        ScanToModel::computeOne();
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;
         ++iter;
@@ -238,4 +238,4 @@ Result CLD::run() {
     return result;
 }
 
-} // namespace cld
+} // namespace lnrr

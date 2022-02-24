@@ -1,15 +1,15 @@
 #pragma once
 
 #include <ceres/ceres.h>
-#include <cld.h>
+#include <scan_to_model.h>
 #include <utils/conversions.h>
 #include <utils/types.h>
 
-namespace cld {
-class CostFunctionCLDRot {
+namespace lnrr {
+class CostFunctionScanToModelRot {
 public:
-    CostFunctionCLDRot(const Matrix& G, const Matrix& C, //
-                       const Matrix& D, const double& lambda)
+    CostFunctionScanToModelRot(const Matrix& G, const Matrix& C, //
+                               const Matrix& D, const double& lambda)
         : G_(G), C_(C), D_(D), lambda_(lambda) {}
 
     template <typename T>
@@ -19,9 +19,9 @@ public:
             Eigen::Matrix<T, Eigen::Dynamic, 3>::Zero(3 * GU.rows(), 3);
         for (size_t l = 0; l < GU.rows(); l++) {
             /* RPY */
-            RT.block(3 * l, 0, 3, 3) = cld::conversions::rpy2RotationMatrix(
-                                           GU(l, 0), GU(l, 1), GU(l, 2))
-                                           .transpose();
+            RT.block(3 * l, 0, 3, 3) =
+                conversions::rpy2RotationMatrix(GU(l, 0), GU(l, 1), GU(l, 2))
+                    .transpose();
         }
         return RT;
     }
@@ -114,4 +114,4 @@ private:
     Matrix D_;
     double lambda_;
 };
-} // namespace cld
+} // namespace lnrr

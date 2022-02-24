@@ -1,13 +1,13 @@
 #pragma once
 
-#include <ceres/cost_cld_U.h>
+#include <ceres/cost_U_scan_to_model.h>
 #include <utils/conversions.h>
 #include <utils/types.h>
 #include <utils/utils.h>
 
 #include <fgt.hpp>
 
-namespace cld {
+namespace lnrr {
 // const size_t DEFAULT_MAX_ITERATIONS = 150;
 // const double DEFAULT_OUTLIERS = 0.1;
 // const double DEFAULT_THRESHOLD_TRUNCATE = 1e6;
@@ -18,7 +18,7 @@ namespace cld {
 const double FGT_EPSILON = 1e-4;
 const double FGT_THRESHOLD = 0.2;
 
-class CLD {
+class ScanToModel {
 private:
     MatrixX3 fixed_;
     MatrixX3 moving_;
@@ -56,22 +56,18 @@ private:
 
     double defaultSigma2();
     void computeSigma2();
-    // void computeG();
-    // void computeF();
-    // void computeH();
     void computeP();
     void computeP_FGT();
     void computeU();
     double computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
 
-    // void computeRotationMatrices();
     SparseMatrix matrixAsSparseBlockDiag(const Matrix& input);
 
 public:
-    CLD(const size_t& max_iterations, const double& outliers,
-        const double& threshold_truncate, const double& sigma2,
-        const double& tolerance, const double& lambda, const double& beta,
-        const Vector& line_sizes)
+    ScanToModel(const size_t& max_iterations, const double& outliers,
+                const double& threshold_truncate, const double& sigma2,
+                const double& tolerance, const double& lambda,
+                const double& beta, const Vector& line_sizes)
         : max_iterations_(max_iterations),
           outliers_(outliers),
           threshold_truncate_(threshold_truncate),
@@ -81,7 +77,11 @@ public:
           beta_(beta),
           line_sizes_(line_sizes),
           number_lines_(line_sizes.rows()) {}
-    ~CLD() {}
+
+    //   TODO: create another constructor that takes in an *structured* point
+    //   cloud and infer line sizes from there
+
+    ~ScanToModel() {}
 
     void initialize();
     void computeOne();
@@ -120,4 +120,4 @@ public:
     Vector getLineSizes() { return line_sizes_; }
     int getNumberLines() { return number_lines_; }
 };
-} // namespace cld
+} // namespace lnrr

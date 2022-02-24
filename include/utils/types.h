@@ -4,11 +4,11 @@
 #include <Eigen/Sparse>
 #include <chrono>
 
-namespace cld {
+namespace lnrr {
 
-class cld_error : public std::runtime_error {
+class lnrr_error : public std::runtime_error {
 public:
-    explicit cld_error(const std::string what_arg)
+    explicit lnrr_error(const std::string what_arg)
         : std::runtime_error(what_arg) {}
 };
 
@@ -43,4 +43,4 @@ struct Probabilities {
     Matrix px;
     double l;
 };
-} // namespace cld
+} // namespace lnrr

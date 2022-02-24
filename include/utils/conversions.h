@@ -4,7 +4,7 @@
 #include <Eigen/Geometry>
 #include <vector>
 
-namespace cld {
+namespace lnrr {
 namespace conversions {
 
 template <typename T>
@@ -36,4 +36,4 @@ rotationMatrix2rpy(const Eigen::Matrix<T, 3, 3>& rotation_matrix) {
 }
 
 } // namespace conversions
-} // namespace cld
+} // namespace lnrr
