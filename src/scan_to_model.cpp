@@ -1,4 +1,4 @@
-#include <scan_to_model.h>
+#include <lnrr/scan_to_model.h>
 
 namespace lnrr {
 
@@ -169,12 +169,11 @@ void ScanToModel::computeSigma2() {
 void ScanToModel::initialize() {
     assert(fixed_.rows() > 0);
     assert(moving_.rows() > 0);
-    M_ = moving_.rows();
     G_ = computeG(beta_, number_lines_);
-    F_ = computeF(M_, line_sizes_);
+    F_ = computeF(moving_.rows(), line_sizes_);
     FT_ = F_.transpose();
     FG_ = F_ * G_;
-    H_ = computeH(M_, line_sizes_);
+    H_ = computeH(moving_.rows(), line_sizes_);
     YD_ = matrixAsSparseBlockDiag(moving_) * H_;
 
     C_ = Matrix::Zero(moving_.rows(), 3);
@@ -205,13 +204,8 @@ Result ScanToModel::run() {
     double l = 0.0;
     double ntol = tolerance_ + 10.0;
 
-    while (iter < max_iterations_ && //
-           ntol > tolerance_ &&      //
-           sigma2_ >
-               10 *
-                   std::numeric_limits<double>::epsilon()) // Maybe also if
-                                                           // sigma2_ increases?
-    {
+    while (iter < max_iterations_ && ntol > tolerance_ &&
+           sigma2_ > 10 * std::numeric_limits<double>::epsilon()) {
         ScanToModel::computeOne();
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;

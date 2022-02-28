@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utils/conversions.h>
+#include <lnrr/utils/conversions.h>
 
 namespace lnrr {
 
@@ -14,7 +14,6 @@ MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
     return RT;
 }
 
-/// TODO: Can this be done with matrix operations (maybe kronecker product?) ?
 SparseMatrix matrixAsSparseBlockDiag(const Matrix& input) {
     SparseMatrix output(input.rows(), input.rows() * input.cols());
     std::vector<Eigen::Triplet<double>> tripletList;
@@ -42,13 +41,11 @@ SparseMatrix computeF(const int& M, const Vector& line_sizes) {
     int m = 0;
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(M);
-    for (size_t col = 0; col < line_sizes.rows(); col++) {
+    for (size_t col = 0; col < line_sizes.rows(); col++)
         for (size_t i = 0; i < line_sizes[col]; i++) {
             tripletList.push_back(Eigen::Triplet<double>(m, col, 1.0));
             m++;
         }
-    }
-
     F.setFromTriplets(tripletList.begin(), tripletList.end());
     return F;
 }
@@ -67,7 +64,6 @@ SparseMatrix computeH(const int& M, const Vector& line_sizes) {
             tripletList.push_back(Eigen::Triplet<double>(m, 3 * col + 2, 1.0));
             m++;
         }
-
     H.setFromTriplets(tripletList.begin(), tripletList.end());
     return H;
 }

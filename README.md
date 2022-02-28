@@ -1,6 +1,6 @@
 # Linewise Non-Rigid Registration (LNRR)
 
-[fgt](https://github.com/gadomski/fgt)
+[fgt](https://github.com/miguelcastillon/fgt)
 
 [cpd](https://github.com/gadomski/cpd)
 
@@ -10,8 +10,12 @@
 
 This code lives [on Github](https://github.com/miguelcastillon/cld).
 
-<img src="docs/images/initial.png" width="200">
-<img src="docs/images/registered.png" width="200">
+<!-- <img src="docs/images/initial.png" width="200">
+<img src="docs/images/registered.png" width="200"> -->
+
+<img src="docs/images/lnrr.png" width="400">
+
+[![Watch the video](https://img.youtube.com/vi/ZsPw2voKi10/maxresdefault.jpg)](https://youtu.be/ZsPw2voKi10)
 
 
 ## Installation
@@ -38,8 +42,8 @@ Only tested with:
 #include <lnrr/scan_to_model.h>
 
 int main(int argc, char** argv) {
-    lnrr::Matrix fixed = load_points_from_somewhere();
-    lnrr::Matrix moving = load_points_from_somewhere();
+    lnrr::Matrix fixed = loadPointsFromSomewhere();
+    lnrr::Matrix moving = loadPointsFromSomewhere();
     lnrr::ScanToModel lnrr();
     lnrr.setFixed(fixed);
     lnrr.setMoving(moving);
@@ -64,11 +68,12 @@ target_link_libraries(my-great-library
 
 ## Contributing
 
-Github [issues](https://github.com/miguelcastillon/cld/issues) and [pull requests](https://github.com/miguelcastillon/cld/pulls), per usual.
+Github [issues](https://github.com/miguelcastillon/lnrr/issues) and [pull requests](https://github.com/miguelcastillon/lnrr/pulls), per usual.
 
 ## Publications
 
-- ToDo
+- Paper information
+
 Please cite as:
 ```
 @article{castillon2022,

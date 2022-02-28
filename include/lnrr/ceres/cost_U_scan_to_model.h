@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ceres/ceres.h>
-#include <scan_to_model.h>
-#include <utils/conversions.h>
-#include <utils/types.h>
+#include <lnrr/scan_to_model.h>
+#include <lnrr/utils/conversions.h>
+#include <lnrr/utils/types.h>
 
 namespace lnrr {
 class CostFunctionScanToModelRot {
