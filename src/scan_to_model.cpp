@@ -54,13 +54,6 @@ void ScanToModel::computeP_FGT() {
     double bandwidth = std::sqrt(2.0 * sigma2_);
     size_t cols = fixed_.cols();
     std::unique_ptr<fgt::Transform> transform;
-    // if (bandwidth > fgt_threshold_)
-    // {
-    //   std::cout << "IFGT" << std::endl;
-    //   transform = std::unique_ptr<fgt::Transform>(new
-    //   fgt::Ifgt(moving_transformed_, bandwidth, fgt_epsilon_));
-    // }
-    // else
     transform = std::unique_ptr<fgt::Transform>(
         new fgt::DirectTree(moving_transformed_, bandwidth, fgt_epsilon_));
     auto kt1 = transform->compute(fixed_, threshold_truncate_);
@@ -69,13 +62,6 @@ void ScanToModel::computeP_FGT() {
     Eigen::ArrayXd denom_p = kt1.array() + ndi;
     Vector pt1 = 1 - ndi / denom_p;
 
-    // if (bandwidth > threshold_truncate)
-    //   bandwidth = threshold_truncate;
-
-    // if (bandwidth > fgt_threshold_)
-    //   transform = std::unique_ptr<fgt::Transform>(new fgt::Ifgt(fixed_,
-    //   bandwidth, fgt_epsilon_));
-    // else
     transform = std::unique_ptr<fgt::Transform>(
         new fgt::DirectTree(fixed_, bandwidth, fgt_epsilon_));
     Vector p1 = transform->compute(moving_transformed_, 1 / denom_p,

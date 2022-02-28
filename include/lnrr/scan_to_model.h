@@ -62,8 +62,6 @@ private:
     void computeU();
     double computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
 
-    SparseMatrix matrixAsSparseBlockDiag(const Matrix& input);
-
 public:
     ScanToModel(const MatrixX3& fixed, const MatrixX3& moving,
                 const double& beta, const double& lambda,

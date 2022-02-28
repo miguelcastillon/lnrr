@@ -4,7 +4,7 @@
 
 namespace lnrr {
 
-MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
+inline MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
     MatrixX3 RT = MatrixX3::Zero(3 * G.rows(), 3);
     MatrixX3 GU = G * U;
     for (size_t l = 0; l < G.rows(); l++)
@@ -14,7 +14,7 @@ MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
     return RT;
 }
 
-SparseMatrix matrixAsSparseBlockDiag(const Matrix& input) {
+inline SparseMatrix matrixAsSparseBlockDiag(const Matrix& input) {
     SparseMatrix output(input.rows(), input.rows() * input.cols());
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(input.rows() * input.cols());
@@ -26,7 +26,7 @@ SparseMatrix matrixAsSparseBlockDiag(const Matrix& input) {
     return output;
 }
 
-Matrix computeG(const double& beta, const int& number_lines) {
+inline Matrix computeG(const double& beta, const int& number_lines) {
     double k = -2.0 * beta * beta;
     Matrix G = Matrix(number_lines, number_lines);
     for (int i = 0; i < number_lines; i++)
@@ -36,7 +36,7 @@ Matrix computeG(const double& beta, const int& number_lines) {
     return G;
 }
 
-SparseMatrix computeF(const int& M, const Vector& line_sizes) {
+inline SparseMatrix computeF(const int& M, const Vector& line_sizes) {
     SparseMatrix F(M, line_sizes.rows());
     int m = 0;
     std::vector<Eigen::Triplet<double>> tripletList;
@@ -50,7 +50,7 @@ SparseMatrix computeF(const int& M, const Vector& line_sizes) {
     return F;
 }
 
-SparseMatrix computeH(const int& M, const Vector& line_sizes) {
+inline SparseMatrix computeH(const int& M, const Vector& line_sizes) {
     SparseMatrix H(3 * M, 3 * line_sizes.rows());
     int m = 0;
     std::vector<Eigen::Triplet<double>> tripletList;
