@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 3.1)
+project(lnrr CXX)
 set(LNRR_VERSION 0.1.0)
 set(PROJECT_SOVERSION 0)
 
-project(lnrr CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CXX_STANDARD_REQUIRED ON)
+add_compile_options(-O3)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+
 
 message(STATUS "[lnrr] Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
+find_package(OpenMP REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(Fgt REQUIRED)
