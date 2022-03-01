@@ -1,16 +1,15 @@
 #pragma once
 
 #include <ceres/ceres.h>
-#include <lnrr/scan_to_model.h>
 #include <lnrr/utils/conversions.h>
 #include <lnrr/utils/types.h>
 
 namespace lnrr {
 class CostFunctionScanToModelRot {
 public:
-    CostFunctionScanToModelRot(const Matrix& G, const Matrix& C, //
-                               const Matrix& D, const double& lambda)
-        : G_(G), C_(C), D_(D), lambda_(lambda) {}
+    CostFunctionScanToModelRot(const Matrix& G, const Matrix& S, //
+                               const Matrix& T, const double& lambda)
+        : G_(G), S_(S), T_(T), lambda_(lambda) {}
 
     template <typename T>
     Eigen::Matrix<T, Eigen::Dynamic, 3> computeRotationMatrices(
@@ -93,13 +92,13 @@ public:
 
         Eigen::Matrix<T, 3, Eigen::Dynamic> R =
             computeRotationMatrices(GU).transpose();
-        Eigen::Matrix<T, 3, Eigen::Dynamic> RCD =
-            R * C_.cast<T>() + D_.cast<T>();
-        const Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, 1>> RCD_vec(
-            RCD.data(), RCD.size());
+        Eigen::Matrix<T, 3, Eigen::Dynamic> RST =
+            R * S_.cast<T>() + T_.cast<T>();
+        const Eigen::Map<const Eigen::Matrix<T, Eigen::Dynamic, 1>> RST_vec(
+            RST.data(), RST.size());
 
         Eigen::SparseMatrix<T> JR = jacobianRotationMatrices(GU);
-        Eigen::Matrix<T, Eigen::Dynamic, 1> res = JR * RCD_vec + lambdaGU_vec;
+        Eigen::Matrix<T, Eigen::Dynamic, 1> res = JR * RST_vec + lambdaGU_vec;
 
         // residual = res.data();
         for (Eigen::Index i = 0; i < res.rows(); i++)
@@ -110,8 +109,8 @@ public:
 
 private:
     Matrix G_;
-    Matrix C_;
-    Matrix D_;
+    Matrix S_;
+    Matrix T_;
     double lambda_;
 };
 } // namespace lnrr

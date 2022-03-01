@@ -25,7 +25,7 @@ doi={10.1109/ACCESS.2021.3069189}}
 
 ## Publications
 
-[1] M. Castillón, A. Palomer, J. Forest and P. Ridao, "Underwater 3D Scanner Model Using a Biaxial MEMS Mirror," in IEEE Access, vol. 9, pp. 50231-50243, 2021, doi: 10.1109/ACCESS.2021.3069189 
+[1] M. Castillón, A. Palomer, J. Forest and P. Ridao, "Underwater 3D Scanner Model Using a Biaxial MEMS Mirror," in IEEE Access, vol. 9, pp. 50231-50243, 2021, doi: 10.1109/ACCESS.2021.3069189 [[pdf](https://doi.org/10.1109/ACCESS.2021.3069189)]
 
 ## Installation
 
@@ -36,7 +36,7 @@ Please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 +
 
 Moreover, our method uses Fast Gauss Transforms to compute the correspondence probability between each pair of points.
 Therefore, our method depends on
-[fgt](https://github.com/miguelcastillon/fgt), which is a fork of [this repository](https://github.com/gadomski/fgt).
+[fgt](https://github.com/miguelcastillon/fgt_threshold), which is a fork of [this repository](https://github.com/gadomski/fgt).
 
 ### Compilation
 As usual, just download and unzip this repository in your preferred location and `cd` into it.
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     lnrr::Matrix moving = loadScan();
     lnrr::Vector line_sizes;  // Vector containing the number of points in each line
     double beta = ...;
-    double lambda = ...
+    double lambda = ...;
 
     lnrr::ScanToModel lnrr(fixed, moving, beta, lambda, line_sizes);
     lnrr::Result result = lnrr.run();
