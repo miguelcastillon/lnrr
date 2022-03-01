@@ -172,9 +172,13 @@ void ScanToModel::computeOne() {
 Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
+#ifdef MODE_DEBUG
     std::cout << "Initializing non-rigid registration" << std::endl;
+#endif
     initialize();
+#ifdef MODE_DEBUG
     std::cout << "Initialization complete" << std::endl;
+#endif
 
     size_t iter = 0;
 
@@ -187,12 +191,14 @@ Result ScanToModel::run() {
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;
         ++iter;
+#ifdef MODE_DEBUG
         std::cout << "Iteration " << iter << " complete. " << std::endl;
         std::cout << "  --> Tolerance = " << ntol << ". ";
         std::cout << "Convergence criteria: " << tolerance_ << std::endl;
         std::cout << "  --> sigma2 = " << sigma2_ << ". ";
         std::cout << "Convergence criteria: "
                   << 10 * std::numeric_limits<double>::epsilon() << std::endl;
+#endif
     }
 
     auto toc = std::chrono::high_resolution_clock::now();
@@ -202,10 +208,12 @@ Result ScanToModel::run() {
     result.points = moving_transformed_;
     result.sigma2 = sigma2_;
     result.iterations = iter;
+#ifdef MODE_DEBUG
     std::cout << "Non-rigid registration complete: ";
     std::cout << result.iterations << " iterations, ";
     std::cout << result.runtime.count() / 1e6 << " seconds. ";
     std::cout << "Final sigma2 = " << result.sigma2 << std::endl;
+#endif
 
     MatrixX3 GV = G_ * A_ + GB_ * RT_;
     MatrixX3 GU = G_ * U_;

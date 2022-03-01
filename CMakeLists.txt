@@ -8,8 +8,21 @@ set(CXX_STANDARD_REQUIRED ON)
 add_compile_options(-O3)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(default_cmake_build_type "RelWithDebInfo")
+  message(STATUS "Setting build type to '${default_cmake_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_cmake_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  message(STATUS "Compiling Debug mode")
+  add_compile_options(-DMODE_DEBUG)
+endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
-message(STATUS "[lnrr] Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -17,7 +30,6 @@ find_package(OpenMP REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Ceres REQUIRED)
 find_package(Fgt REQUIRED)
-message(STATUS "[lnrr] Eigen3 version: ${EIGEN3_VERSION}")
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(${PROJECT_BINARY_DIR}/lnrr-config-version.cmake VERSION ${LNRR_VERSION} COMPATIBILITY AnyNewerVersion)
@@ -51,39 +63,25 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         PRIVATE
         -Wall
         -pedantic
-        # The no-nested-anon-types is for nanoflann
         -Wno-nested-anon-types
         )
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     target_compile_options(Library-C++
         PUBLIC
         -std=c++11
-        # For some deprecations inside Eigen
         -Wno-deprecated-declarations
         PRIVATE
         -Wall
         -pedantic
-        # For pragma omp's
         -Wno-unknown-pragmas
-        )
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-    target_compile_options(Library-C++
-        PUBLIC
-        # Eigen does relative includes
-        /wd4464
-        # This is the famous "unreferenced inline function has been removed"
-        /wd4514
-        # Yo, I don't care if that function wasn't inlined
-        /wd4710
-        # Padding
-        /wd4820
-        # Automatic inline expansion
-        /wd4711
         )
 endif()
 install(TARGETS Library-C++ DESTINATION lib EXPORT lnrr-targets)
 install(DIRECTORY include/lnrr DESTINATION include)
 install(EXPORT lnrr-targets DESTINATION lib/cmake/lnrr NAMESPACE Lnrr::)
 
-# include(GenerateExportHeader)
-# generate_export_header(Library-C++)
+# Create uninstall command
+configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+               "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
