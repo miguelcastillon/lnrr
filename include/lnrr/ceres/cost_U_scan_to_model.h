@@ -17,7 +17,7 @@ public:
         const Eigen::Matrix<T, Eigen::Dynamic, 3>& GU) const {
         Eigen::Matrix<T, Eigen::Dynamic, 3> RT =
             Eigen::Matrix<T, Eigen::Dynamic, 3>::Zero(3 * GU.rows(), 3);
-        for (size_t l = 0; l < GU.rows(); l++) {
+        for (Eigen::Index l = 0; l < GU.rows(); l++) {
             /* RPY */
             RT.block(3 * l, 0, 3, 3) =
                 conversions::rpy2RotationMatrix(GU(l, 0), GU(l, 1), GU(l, 2))
@@ -61,13 +61,13 @@ public:
         std::vector<Eigen::Triplet<T>> tripletList;
         tripletList.reserve(3 * 9 * number_rows);
 
-        for (size_t line = 0; line < number_rows; line++) {
+        for (int line = 0; line < number_rows; line++) {
             Eigen::Matrix<T, 3, 9> JR =
                 jacobianRotationMatrix(GU(line, 0), GU(line, 1), GU(line, 2));
             Eigen::Matrix<T, 1, 9> JRx = JR.row(0);
             Eigen::Matrix<T, 1, 9> JRy = JR.row(1);
             Eigen::Matrix<T, 1, 9> JRz = JR.row(2);
-            for (size_t j = 0; j < JR.cols(); j++) {
+            for (Eigen::Index j = 0; j < JR.cols(); j++) {
                 tripletList.push_back(
                     Eigen::Triplet<T>(line, 9 * line + j, JRx(j)));
                 tripletList.push_back(Eigen::Triplet<T>(number_rows + line,
@@ -102,7 +102,7 @@ public:
         Eigen::Matrix<T, Eigen::Dynamic, 1> res = JR * RCD_vec + lambdaGU_vec;
 
         // residual = res.data();
-        for (size_t i = 0; i < res.rows(); i++)
+        for (Eigen::Index i = 0; i < res.rows(); i++)
             residual[i] = res(i);
 
         return true;

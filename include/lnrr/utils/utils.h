@@ -7,7 +7,7 @@ namespace lnrr {
 inline MatrixX3 computeRotationMatrices(const Matrix& G, const MatrixX3& U) {
     MatrixX3 RT = MatrixX3::Zero(3 * G.rows(), 3);
     MatrixX3 GU = G * U;
-    for (size_t l = 0; l < G.rows(); l++)
+    for (Eigen::Index l = 0; l < G.rows(); l++)
         RT.block(3 * l, 0, 3, 3) =
             conversions::rpy2RotationMatrix(GU(l, 0), GU(l, 1), GU(l, 2))
                 .transpose();
@@ -18,8 +18,8 @@ inline SparseMatrix matrixAsSparseBlockDiag(const Matrix& input) {
     SparseMatrix output(input.rows(), input.rows() * input.cols());
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(input.rows() * input.cols());
-    for (size_t i = 0; i < input.rows(); i++)
-        for (size_t j = 0; j < input.cols(); j++)
+    for (Eigen::Index i = 0; i < input.rows(); i++)
+        for (Eigen::Index j = 0; j < input.cols(); j++)
             tripletList.push_back(
                 Eigen::Triplet<double>(i, input.cols() * i + j, input(i, j)));
     output.setFromTriplets(tripletList.begin(), tripletList.end());
@@ -41,7 +41,7 @@ inline SparseMatrix computeF(const int& M, const Vector& line_sizes) {
     int m = 0;
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(M);
-    for (size_t col = 0; col < line_sizes.rows(); col++)
+    for (Eigen::Index col = 0; col < line_sizes.rows(); col++)
         for (size_t i = 0; i < line_sizes[col]; i++) {
             tripletList.push_back(Eigen::Triplet<double>(m, col, 1.0));
             m++;
@@ -55,7 +55,7 @@ inline SparseMatrix computeH(const int& M, const Vector& line_sizes) {
     int m = 0;
     std::vector<Eigen::Triplet<double>> tripletList;
     tripletList.reserve(3 * M);
-    for (size_t col = 0; col < line_sizes.rows(); col++)
+    for (Eigen::Index col = 0; col < line_sizes.rows(); col++)
         for (size_t i = 0; i < line_sizes[col]; i++) {
             tripletList.push_back(Eigen::Triplet<double>(m, 3 * col, 1.0));
             m++;

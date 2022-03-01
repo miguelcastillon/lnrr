@@ -50,7 +50,6 @@ void ScanToModel::computeP() {
 }
 
 void ScanToModel::computeP_FGT() {
-    /// TODO: how to use threshold_truncate?
     double bandwidth = std::sqrt(2.0 * sigma2_);
     size_t cols = fixed_.cols();
     std::unique_ptr<fgt::Transform> transform;
@@ -87,12 +86,11 @@ double ScanToModel::defaultSigma2() {
            1000.; // 1000 here is a magic number
 }
 
-double ScanToModel::computeOptimalRotationCeres(const Matrix& S,
-                                                const Matrix& T) {
+void ScanToModel::computeOptimalRotationCeres(const Matrix& S,
+                                              const Matrix& T) {
     ceres::Problem problem;
     ceres::LossFunction* loss = NULL;
 
-    /// TODO: stride size? =4?
     ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>* cost =
         new ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>(
             new CostFunctionScanToModelRot(G_, S, T, lambda_));
@@ -104,23 +102,15 @@ double ScanToModel::computeOptimalRotationCeres(const Matrix& S,
 
     ceres::Solver::Options options;
     options.minimizer_progress_to_stdout = true;
-    // options.max_num_iterations = 500;
-    // options.linear_solver_type = ceres::DENSE_QR;
-    // options.linear_solver_type = ceres::DENSE_SCHUR;
     options.check_gradients = false;
-    // options.use_nonmonotonic_steps = true;
-    // options.max_num_consecutive_invalid_steps = 100;
     options.minimizer_type = ceres::LINE_SEARCH;
-    // options.line_search_direction_type = ceres::BFGS;
     options.logging_type = ceres::SILENT;
-    // options.function_tolerance = 1e-10;
     options.function_tolerance = 1e-4;
 
     ceres::Solver::Summary summary;
     Solve(options, &problem, &summary);
-    // std::cout << summary.BriefReport() << "\n";
 
-    return summary.final_cost;
+    return;
 }
 
 void ScanToModel::computeU() {
@@ -139,7 +129,7 @@ void ScanToModel::computeU() {
                D_.transpose() * P_.p1.asDiagonal() * D_ / sigma2_;
     Matrix T = -lambda_ * A_.transpose() * GB_ +
                (P_.p1.asDiagonal() * C_ - P_.px).transpose() * D_ / sigma2_;
-    double cost_aux = computeOptimalRotationCeres(S, T);
+    computeOptimalRotationCeres(S, T);
 }
 
 void ScanToModel::computeSigma2() {
@@ -161,7 +151,6 @@ void ScanToModel::initialize() {
     FG_ = F_ * G_;
     H_ = computeH(moving_.rows(), line_sizes_);
     YD_ = matrixAsSparseBlockDiag(moving_) * H_;
-
     C_ = Matrix::Zero(moving_.rows(), 3);
     D_ = YD_;
 
@@ -183,7 +172,9 @@ void ScanToModel::computeOne() {
 Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
+    std::cout << "Initializing non-rigid registration" << std::endl;
     initialize();
+    std::cout << "Initialization complete" << std::endl;
 
     size_t iter = 0;
 
@@ -196,6 +187,12 @@ Result ScanToModel::run() {
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;
         ++iter;
+        std::cout << "Iteration " << iter << " complete. " << std::endl;
+        std::cout << "  --> Tolerance = " << ntol << ". ";
+        std::cout << "Convergence criteria: " << tolerance_ << std::endl;
+        std::cout << "  --> sigma2 = " << sigma2_ << ". ";
+        std::cout << "Convergence criteria: "
+                  << 10 * std::numeric_limits<double>::epsilon() << std::endl;
     }
 
     auto toc = std::chrono::high_resolution_clock::now();
@@ -205,16 +202,19 @@ Result ScanToModel::run() {
     result.points = moving_transformed_;
     result.sigma2 = sigma2_;
     result.iterations = iter;
+    std::cout << "Non-rigid registration complete: ";
+    std::cout << result.iterations << " iterations, ";
+    std::cout << result.runtime.count() / 1e6 << " seconds. ";
+    std::cout << "Final sigma2 = " << result.sigma2 << std::endl;
 
     MatrixX3 GV = G_ * A_ + GB_ * RT_;
     MatrixX3 GU = G_ * U_;
-    std::vector<RigidTransformRPY> line_transforms(number_lines_);
-    for (size_t i = 0; i < number_lines_; i++) {
-        line_transforms[number_lines_].xyz = GV.row(i);
-        line_transforms[number_lines_].rpy = GU.row(i);
+    for (int i = 0; i < number_lines_; i++) {
+        RigidTransformRPY line_transform;
+        line_transform.xyz = GV.row(i);
+        line_transform.rpy = GU.row(i);
+        result.line_transforms.push_back(line_transform);
     }
-    result.line_transforms = line_transforms;
-
     return result;
 }
 

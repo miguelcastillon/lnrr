@@ -60,7 +60,7 @@ private:
     void computeP();
     void computeP_FGT();
     void computeU();
-    double computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
+    void computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
 
 public:
     ScanToModel(const MatrixX3& fixed, const MatrixX3& moving,
