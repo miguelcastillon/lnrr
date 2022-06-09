@@ -3,7 +3,7 @@
 
 
 This repository provides a basic implementation of the non-rigid point cloud registration method described in [1].
-For a detailed explanation of the method and its motivation, please refer to the [original paper](https://doi.org/10.1109/ACCESS.2021.3069189).
+For a detailed explanation of the method and its motivation, please refer to the [original paper](https://doi.org/10.1109/LRA.2022.3180038).
 You can also watch the [video](https://youtu.be/ZsPw2voKi10) that summarizes this work.
 In a nutshell, the method is able to find the set of rigid transformations that need to be applied to *each line* in the scan in order to match an existing model:
 
@@ -12,20 +12,24 @@ In a nutshell, the method is able to find the set of rigid transformations that 
 
 Thank you for citing the original publication [1] if you use our method in academic work:
 ```
-@ARTICLE{castillon2021,  
-author={Castillón, Miguel and Palomer, Albert and Forest, Josep and Ridao, Pere},
-journal={IEEE Access},
-title={Underwater 3D Scanner Model Using a Biaxial MEMS Mirror},
-year={2021},
-volume={9},
-number={},
-pages={50231-50243},
-doi={10.1109/ACCESS.2021.3069189}}
+@article{castillon2022linewise,
+  title={Linewise Non-Rigid Point Cloud Registration},
+  author={Castillón, Miguel and Ridao, Pere and Siegwart, Roland and Cadena, César},
+  journal={IEEE Robotics and Automation Letters},
+  year={2022},
+  publisher={IEEE},
+  doi={10.1109/LRA.2022.3180038}
+}
 ```
+
+If you want to know more about our underwater 3D scanner, check out [the paper](https://doi.org/10.1109/TMECH.2022.3170504) [2] and [this blog post](https://miguelcastillon.github.io/project/underwater-3d-scanner/).
 
 ## Publications
 
-[1] M. Castillón, A. Palomer, J. Forest and P. Ridao, "Underwater 3D Scanner Model Using a Biaxial MEMS Mirror," in IEEE Access, vol. 9, pp. 50231-50243, 2021, doi: 10.1109/ACCESS.2021.3069189 [[pdf](https://doi.org/10.1109/ACCESS.2021.3069189)]
+[1] M. Castillón, P. Ridao, R. Siegwart and C. Cadena, "Linewise Non-Rigid Point Cloud Registration," in IEEE Robotics and Automation Letters, doi: 10.1109/LRA.2022.3180038. [[pdf](https://doi.org/10.1109/LRA.2022.3180038)]
+
+[2] M. Castillón, J. Forest and P. Ridao, "Underwater 3D Scanner to Counteract Refraction: Calibration and Experimental Results," in IEEE/ASME Transactions on Mechatronics, doi: 10.1109/TMECH.2022.3170504. [[pdf](https://doi.org/10.1109/TMECH.2022.3170504)]
+
 
 ## Installation
 
