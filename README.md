@@ -4,10 +4,13 @@
 
 This repository provides a basic implementation of the non-rigid point cloud registration method described in [1].
 For a detailed explanation of the method and its motivation, please refer to the [original paper](https://doi.org/10.1109/LRA.2022.3180038).
-You can also watch the [video](https://youtu.be/ZsPw2voKi10) that summarizes this work.
 In a nutshell, the method is able to find the set of rigid transformations that need to be applied to *each line* in the scan in order to match an existing model:
 
 <img src="docs/images/lnrr.png" width="400">
+
+You can also watch the video that summarizes this work:
+
+[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/maxresdefault.jpg)](https://youtu.be/4QDZ7z1WER8)
 
 
 Thank you for citing the original publication [1] if you use our method in academic work:
