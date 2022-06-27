@@ -10,19 +10,20 @@ In a nutshell, the method is able to find the set of rigid transformations that 
 
 You can also watch the video that summarizes this work:
 
-[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/maxresdefault.jpg)](https://youtu.be/4QDZ7z1WER8)
+[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/sddefault.jpg)](https://youtu.be/4QDZ7z1WER8)
 
 
 Thank you for citing the original publication [1] if you use our method in academic work:
 ```
-@article{castillon2022linewise,
-  title={Linewise Non-Rigid Point Cloud Registration},
+@ARTICLE{9788023,  
   author={Castillón, Miguel and Ridao, Pere and Siegwart, Roland and Cadena, César},
   journal={IEEE Robotics and Automation Letters},
+  title={Linewise Non-Rigid Point Cloud Registration},
   year={2022},
-  publisher={IEEE},
-  doi={10.1109/LRA.2022.3180038}
-}
+  volume={7},
+  number={3},
+  pages={7044-7051},
+  doi={10.1109/LRA.2022.3180038}}
 ```
 
 If you want to know more about our underwater 3D scanner, check out [the paper](https://doi.org/10.1109/TMECH.2022.3170504) [2] and [this blog post](https://miguelcastillon.github.io/project/underwater-3d-scanner/).
