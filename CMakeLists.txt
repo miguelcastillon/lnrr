@@ -80,6 +80,14 @@ install(TARGETS Library-C++ DESTINATION lib EXPORT lnrr-targets)
 install(DIRECTORY include/lnrr DESTINATION include)
 install(EXPORT lnrr-targets DESTINATION lib/cmake/lnrr NAMESPACE Lnrr::)
 
+set(EXECUTABLE_OUTPUT_PATH ..)
+add_executable(test_lnrr
+    tests/test_lnrr.cpp
+    )
+target_link_libraries(test_lnrr
+    Library-C++
+    )
+
 # Create uninstall command
 configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
                "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)

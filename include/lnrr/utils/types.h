@@ -30,7 +30,7 @@ struct RigidTransformRPY {
 };
 
 struct Result {
-    Matrix points;
+    MatrixX3 points;
     std::vector<RigidTransformRPY> line_transforms;
     double sigma2;
     std::chrono::microseconds runtime;

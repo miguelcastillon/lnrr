@@ -99,6 +99,14 @@ target_link_libraries(my-new-library
     )
 ```
 
+## Example
+
+To run the code with the example model and scan in the folder `data`, you can just run the test:
+```bash
+./test_lnrr data/stanford-bunny_dense_occluded.txt data/scan.txt data/scan_linesizes.txt data/scan_registered.txt 15 100 0.005
+```
+Converting between `.pcd` and `.txt` files is easy using PCL, but the code is not added here to limit the number of dependencies.
+
 ## Contributing
 
 Please feel free to create [issues](https://github.com/miguelcastillon/lnrr/issues) and [pull requests](https://github.com/miguelcastillon/lnrr/pulls), they will be much appreciated.

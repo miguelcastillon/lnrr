@@ -76,7 +76,11 @@ public:
           outliers_(DEFAULT_OUTLIERS),
           threshold_truncate_(DEFAULT_THRESHOLD_TRUNCATE),
           sigma2_(DEFAULT_SIGMA2),
-          tolerance_(DEFAULT_TOLERANCE) {}
+          tolerance_(DEFAULT_TOLERANCE) {
+        assert(line_sizes.sum() == moving.rows() &&
+               "The vector line_sizes must agree with the number of points of "
+               "each line in the scan");
+    }
 
     ~ScanToModel() {}
 

@@ -7,7 +7,7 @@
 namespace lnrr {
 class CostFunctionScanToModelRot {
 public:
-    CostFunctionScanToModelRot(const Matrix& G, const Matrix& S, //
+    CostFunctionScanToModelRot(const Matrix& G, const Matrix& S,
                                const Matrix& T, const double& lambda)
         : G_(G), S_(S), T_(T), lambda_(lambda) {}
 
@@ -100,7 +100,6 @@ public:
         Eigen::SparseMatrix<T> JR = jacobianRotationMatrices(GU);
         Eigen::Matrix<T, Eigen::Dynamic, 1> res = JR * RST_vec + lambdaGU_vec;
 
-        // residual = res.data();
         for (Eigen::Index i = 0; i < res.rows(); i++)
             residual[i] = res(i);
 

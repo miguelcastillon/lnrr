@@ -63,6 +63,21 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "bit": "cpp",
-        "numericaldiff": "cpp"
+        "numericaldiff": "cpp",
+        "*.in": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "any": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "codecvt": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "filesystem": "cpp",
+        "regex": "cpp",
+        "slist": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp",
+        "valarray": "cpp"
     }
 }
