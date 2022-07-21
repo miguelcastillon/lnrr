@@ -129,7 +129,8 @@ void ScanToModel::computeU() {
                D_.transpose() * P_.p1.asDiagonal() * D_ / sigma2_;
     Matrix T = -lambda_ * A_.transpose() * GB_ +
                (P_.p1.asDiagonal() * C_ - P_.px).transpose() * D_ / sigma2_;
-    computeOptimalRotationCeres(S, T);
+
+    // computeOptimalRotationCeres(S, T); // Not computing optimal rotation
 }
 
 void ScanToModel::computeSigma2() {
