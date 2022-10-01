@@ -21,18 +21,18 @@ jobs:
                               libsuitesparse-dev 
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
-          cmake .. && make && sudo make install
+          cmake .. && make -j8 && sudo make install
           git clone https://github.com/miguelcastillon/fgt_threshold
           cd fgt_threshold && mkdir build && cd build
-          cmake .. && make && sudo make install
+          cmake .. && make -j8 && sudo make install
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. && make -j2
+          cmake .. && make
       - name: Test
         run: |
-          ctest -j2
+          ctest
 
                                             
