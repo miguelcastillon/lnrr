@@ -28,16 +28,27 @@ jobs:
           sudo make install
           export PATH=$HOME/cmake-install/bin:$PATH
           export CMAKE_PREFIX_PATH=$HOME/cmake-install:$CMAKE_PREFIX_PATH
+      - name: Install Eigen 3.4
+        run: |
+          wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+          tar -zxvf eigen-3.4.0.tar.gz
+          cd eigen-3.4.0 && mkdir build && cd build
+          cmake .. && make -j2 && sudo make install
+          sudo ln -sf /usr/local/include/eigen3/Eigen /usr/local/include/Eigen
+          sudo ln -sf /usr/local/include/eigen3/unsupported /usr/local/include/unsupported
+          cd ../..
       - name: Install Ceres
         run: |
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
           cmake .. && make -j2 && sudo make install
+          cd ../..
       - name: Install FGT
         run: |
           git clone https://github.com/miguelcastillon/fgt_threshold
           cd fgt_threshold && mkdir build && cd build
           cmake .. && make -j2 && sudo make install
+          cd ../..
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
