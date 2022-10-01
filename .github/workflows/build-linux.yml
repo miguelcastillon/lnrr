@@ -5,41 +5,10 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: ${{ matrix.name }} ${{ matrix.build_type }}
-    runs-on: ${{ matrix.os }}
-
-    env:
-      CTEST_OUTPUT_ON_FAILURE: ON
-      CTEST_PARALLEL_LEVEL: 1
-      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
-      VERBOSE: 1  # to show all cmake scripts debug info
-
-    strategy:
-      fail-fast: false
-      matrix:
-        # Github Actions requires a single row to be added to the build matrix.
-        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
-        name: [
-          ubuntu-22.04-gcc,
-          ubuntu-latest-gcc
-        ]
-
-        build_type: [ Release ]
-        include:
-          - name: ubuntu-20.04-gcc
-            os: ubuntu-20.04
-            compiler: gcc
-            coverage: OFF
-            
-          - name: ubuntu-latest-gcc
-            os: ubuntu-latest
-            compiler: gcc
-            coverage: OFF
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
       - name: Install dependencies
         run: |
           sudo apt-get -y update
