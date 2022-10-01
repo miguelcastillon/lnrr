@@ -7,26 +7,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y upgrade
-          sudo apt-get install -y cmake \
-                                  libgoogle-glog-dev \
-                                  libgflags-dev \
-                                  libatlas-base-dev \
-                                  libeigen3-dev \
-                                  libsuitesparse-dev 
+          sudo apt -y update
+          sudo apt -y upgrade
+          sudo apt install -y git \
+                              openssh-client \
+                              cmake \
+                              libgoogle-glog-dev \
+                              libgflags-dev \
+                              libatlas-base-dev \
+                              libeigen3-dev \
+                              libsuitesparse-dev 
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
           cmake .. && make && sudo make install
-#          cd ../.. && rm -rf ceres-solver
           git clone https://github.com/miguelcastillon/fgt_threshold
           cd fgt_threshold && mkdir build && cd build
           cmake .. && make && sudo make install
-#          cd ../.. && rm -rf fgt_threshold
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Build
         run: |
           mkdir build && cd build
