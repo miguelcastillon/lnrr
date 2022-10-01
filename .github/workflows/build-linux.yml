@@ -13,18 +13,25 @@ jobs:
           sudo apt -y upgrade
           sudo apt install -y git \
                               openssh-client \
-                              cmake \
                               libgoogle-glog-dev \
                               libgflags-dev \
                               libatlas-base-dev \
                               libeigen3-dev \
                               libsuitesparse-dev 
+          wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2.tar.gz
+          tar -zxvf cmake-3.24.2.tar.gz
+          cd cmake-3.24.2.tar.gz
+          ./bootstrap --prefix=$HOME/cmake-install
+          make -j2
+          sudo make install
+          export PATH=$HOME/cmake-install/bin:$PATH
+          export CMAKE_PREFIX_PATH=$HOME/cmake-install:$CMAKE_PREFIX_PATH
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
-          cmake .. && make -j8 && sudo make install
+          cmake .. && make -j2 && sudo make install
           git clone https://github.com/miguelcastillon/fgt_threshold
           cd fgt_threshold && mkdir build && cd build
-          cmake .. && make -j8 && sudo make install
+          cmake .. && make -j2 && sudo make install
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
