@@ -1,9 +1,9 @@
 #pragma once
 
-#include <lnrr/ceres/cost_U_scan_to_model.h>
-#include <lnrr/utils/conversions.h>
-#include <lnrr/utils/types.h>
-#include <lnrr/utils/utils.h>
+#include <lnrr/scan_to_model/ceres/cost_U_scan_to_model.h>
+#include <lnrr/scan_to_model/utils/conversions.h>
+#include <lnrr/scan_to_model/utils/types.h>
+#include <lnrr/scan_to_model/utils/utils.h>
 
 #include <fgt.hpp>
 

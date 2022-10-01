@@ -1,18 +1,68 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+# Based on GTSAM file (by @ProfFan)
+name: CI Linux
+
+on: [push, pull_request]
+
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
+  build:
+    name: ${{ matrix.name }} ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CTEST_OUTPUT_ON_FAILURE: ON
+      CTEST_PARALLEL_LEVEL: 1
+      CMAKE_BUILD_TYPE: ${{ matrix.build_type }}
+      VERBOSE: 1  # to show all cmake scripts debug info
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Github Actions requires a single row to be added to the build matrix.
+        # See https://help.github.com/en/articles/workflow-syntax-for-github-actions.
+        name: [
+          ubuntu-22.04-gcc,
+          ubuntu-latest-gcc
+        ]
+
+        build_type: [ Release ]
+        include:
+          - name: ubuntu-20.04-gcc
+            os: ubuntu-20.04
+            compiler: gcc
+            coverage: OFF
+            
+          - name: ubuntu-latest-gcc
+            os: ubuntu-latest
+            compiler: gcc
+            coverage: OFF
+
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
+      - name: Checkout
         uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+      - name: Install dependencies
         run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          sudo apt-get -y update
+          sudo apt-get -y upgrade
+          sudo apt-get install -y cmake \
+                                  libgoogle-glog-dev \
+                                  libgflags-dev \
+                                  libatlas-base-dev \
+                                  libeigen3-dev \
+                                  libsuitesparse-dev 
+          git clone https://ceres-solver.googlesource.com/ceres-solver
+          cd ceres-solver && mkdir build && cd build
+          cmake .. && make && sudo make install
+#          cd ../.. && rm -rf ceres-solver
+          git clone https://github.com/miguelcastillon/fgt_threshold
+          cd fgt_threshold && mkdir build && cd build
+          cmake .. && make && sudo make install
+#          cd ../.. && rm -rf fgt_threshold
+      - name: Build
+        run: |
+          mkdir build && cd build
+          cmake .. && make -j2
+      - name: Test
+        run: |
+          ctest -j2
+
+                                            

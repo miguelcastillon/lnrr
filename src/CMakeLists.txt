@@ -1,0 +1,1 @@
+add_subdirectory(scan_to_model)

@@ -10,8 +10,11 @@ In a nutshell, the method is able to find the set of rigid transformations that 
 
 You can also watch the video that summarizes this work:
 
-[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/sddefault.jpg)](https://youtu.be/4QDZ7z1WER8)
+[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/mqdefault.jpg)](https://youtu.be/4QDZ7z1WER8)
 
+Additionally, you can watch the presentation of this work at IROS 2022:
+
+[![Watch the video](https://img.youtube.com/vi/tp0ob9yHagQ/mqdefault.jpg)](https://youtu.be/tp0ob9yHagQ)
 
 Thank you for citing the original publication [1] if you use our method in academic work:
 ```

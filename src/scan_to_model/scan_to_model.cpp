@@ -1,4 +1,4 @@
-#include <lnrr/scan_to_model.h>
+#include <lnrr/scan_to_model/scan_to_model.h>
 
 namespace lnrr {
 
@@ -174,7 +174,8 @@ Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
 #ifdef MODE_DEBUG
-    std::cout << "Initializing non-rigid registration" << std::endl;
+    std::cout << "Initializing non-rigid registration in DEBUG mode"
+              << std::endl;
 #endif
     initialize();
 #ifdef MODE_DEBUG
@@ -208,7 +209,7 @@ Result ScanToModel::run() {
         std::chrono::duration_cast<std::chrono::microseconds>(toc - tic);
     result.points = moving_transformed_;
     result.sigma2 = sigma2_;
-    result.iterations = iter;
+    // result.iterations = iter;
 #ifdef MODE_DEBUG
     std::cout << "Non-rigid registration complete: ";
     std::cout << result.iterations << " iterations, ";
