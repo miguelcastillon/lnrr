@@ -57,6 +57,6 @@ jobs:
           cmake .. && make
       - name: Test
         run: |
-          ctest
+          ctest -V1
 
                                             

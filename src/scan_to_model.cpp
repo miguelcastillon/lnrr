@@ -1,4 +1,4 @@
-#include <lnrr/scan_to_model/scan_to_model.h>
+#include <lnrr/scan_to_model.h>
 
 namespace lnrr {
 

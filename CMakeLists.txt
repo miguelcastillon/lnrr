@@ -15,9 +15,9 @@ find_package(Eigen3 3.4 REQUIRED)
 find_package(Ceres 2.1 REQUIRED)
 find_package(Fgt REQUIRED)
 
-enable_testing()
-
 add_subdirectory(src)
+
+enable_testing()
 add_subdirectory(tests)
 
 # if(NOT CMAKE_BUILD_TYPE)

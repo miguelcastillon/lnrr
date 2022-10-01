@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lnrr/scan_to_model/utils/conversions.h>
+#include <lnrr/utils/conversions.h>
 
 namespace lnrr {
 

@@ -6,7 +6,7 @@
                 "${workspaceFolder}/include/**",
                 "/usr/include/**",
                 "/usr/local/include/**",
-                "/home/user/libraries/**"
+                "/home/miguel/libraries/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
