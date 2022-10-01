@@ -17,8 +17,10 @@ find_package(Fgt REQUIRED)
 
 add_subdirectory(src)
 
-enable_testing()
-add_subdirectory(tests)
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
 # if(NOT CMAKE_BUILD_TYPE)
 #   set(default_cmake_build_type "RelWithDebInfo")

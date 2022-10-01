@@ -12,17 +12,17 @@ include(GoogleTest)
 
 ################## 
 
-add_executable(lnrr_conversions_test lnrr_conversions_test.cpp)
-target_include_directories(lnrr_conversions_test PUBLIC
+add_executable(conversions_test conversions_test.cpp)
+target_include_directories(conversions_test PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include>"
     ${EIGEN3_INCLUDE_DIR} 
     ${CERES_INCLUDE_DIR}
     )
-target_link_libraries(lnrr_conversions_test 
+target_link_libraries(conversions_test 
   GTest::gtest_main
   )
-gtest_discover_tests(lnrr_conversions_test)
+gtest_discover_tests(conversions_test)
 
 ################## 
 

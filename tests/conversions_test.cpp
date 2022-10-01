@@ -13,17 +13,35 @@ RotationEquivalence data1 = {0.0, 0.0, 0.0,
                              Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0),
                              Eigen::Matrix3d::Identity()};
 RotationEquivalence data2 = {
-    0.0, 0.0, M_PI_2, Eigen::Quaterniond(0.7071068, 0.0, 0.0, 0.7071068),
-    (Eigen::Matrix3d() << 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+    0.0, 0.0, M_PI_4, Eigen::Quaterniond(0.9238795, 0.0, 0.0, 0.3826834),
+    (Eigen::Matrix3d() << 0.7071068, -0.7071068, 0.0000000, 0.7071068,
+     0.7071068, 0.0000000, 0.0000000, 0.0000000, 1.0000000)
         .finished()};
-// RotationEquivalence data3 = {0.0, M_PI_2, 0.0,
-//                              Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0),
-//                              Eigen::Matrix3d::Identity()};
-// RotationEquivalence data4 = {M_PI_2, 0.0, 0.0,
-//                              Eigen::Quaterniond(1.0, 0.0, 0.0, 0.0),
-//                              Eigen::Matrix3d{1, 0, 0, 0, 0, -1, 0, 1, 0}};
+RotationEquivalence data3 = {
+    0.0, M_PI_4, 0.0, Eigen::Quaterniond(0.9238795, 0.0, 0.3826834, 0.0),
+    (Eigen::Matrix3d() << 0.7071068, 0.0000000, 0.7071068, 0.0000000, 1.0000000,
+     0.0000000, -0.7071068, 0.0000000, 0.7071068)
+        .finished()};
+RotationEquivalence data4 = {
+    M_PI_4, 0.0, 0.0, Eigen::Quaterniond(0.9238795, 0.3826834, 0.0, 0.0),
+    (Eigen::Matrix3d() << 1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.7071068,
+     -0.7071068, 0.0000000, 0.7071068, 0.7071068)
+        .finished()};
+RotationEquivalence data5 = {
+    M_PI_4, M_PI_4, M_PI_4,
+    Eigen::Quaterniond(0.8446232, 0.1913417, 0.4619398, 0.1913417),
+    (Eigen::Matrix3d() << 0.5, -0.1464466, 0.8535534, 0.5, 0.8535534,
+     -0.1464466, -0.7071068, 0.5, 0.5)
+        .finished()};
+RotationEquivalence data6 = {
+    0.122173, -0.5410521, 3.0194196,
+    Eigen::Quaterniond(0.0424344, 0.2698338, 0.0424344, 0.9610351),
+    (Eigen::Matrix3d() << -0.8507781, -0.0586615, 0.5222408, 0.1044624,
+     -0.9927973, 0.0586615, 0.5150381, 0.1044624, 0.8507781)
+        .finished()};
 
-std::vector<RotationEquivalence> data = {data1, data2};
+std::vector<RotationEquivalence> data = {data1, data2, data3,
+                                         data4, data5, data6};
 
 TEST(ConversionsTests, TestRpy2Quaternion) {
     for (size_t i = 0; i < data.size(); i++) {

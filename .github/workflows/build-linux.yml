@@ -15,6 +15,7 @@ jobs:
                               openssh-client \
                               libgoogle-glog-dev \
                               libgflags-dev \
+                              libgtest-dev \
                               libatlas-base-dev \
                               libeigen3-dev \
                               libsuitesparse-dev 
@@ -54,9 +55,8 @@ jobs:
       - name: Build
         run: |
           mkdir build && cd build
-          cmake .. && make
+          cmake .. -DBUILD_TESTS=ON
+          make
       - name: Test
         run: |
-          ctest -V1
-
-                                            
+          ctest                                            
