@@ -21,11 +21,11 @@ jobs:
                               libsuitesparse-dev 
       - name: Install GTest
         run: |
-          cd /usr/src/gtest
+          cd /usr/src/gtest/
           sudo cmake CMakeLists.txt
           sudo make
-          sudo cp libgtest.a /usr/lib
-          sudo cp libgtest_main.a /usr/lib
+          sudo cp /usr/src/googletest/googletest/libgtest.a /usr/lib
+          sudo cp /usr/src/googletest/googletest/libgtest_main.a /usr/lib
           cd
       - name: Install CMake 2.24.2
         run: |
