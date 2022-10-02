@@ -19,6 +19,13 @@ jobs:
                               libatlas-base-dev \
                               libeigen3-dev \
                               libsuitesparse-dev 
+      - name: Install GTest
+        run: |
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp *.a /usr/lib
+          cd
       - name: Install CMake 2.24.2
         run: |
           wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2.tar.gz
