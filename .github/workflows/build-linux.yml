@@ -24,7 +24,8 @@ jobs:
           cd /usr/src/gtest
           sudo cmake CMakeLists.txt
           sudo make
-          sudo cp *.a /usr/lib
+          sudo cp libgtest.a /usr/lib
+          sudo cp libgtest_main.a /usr/lib
           cd
       - name: Install CMake 2.24.2
         run: |
