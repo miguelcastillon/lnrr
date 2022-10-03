@@ -42,7 +42,7 @@ jobs:
         run: |
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
-          cmake .. && make -j2 && sudo make install
+          cmake -DBUILD_TESTING=OFF .. && make -j2 && sudo make install
           cd ../..
       - name: Install FGT
         run: |
