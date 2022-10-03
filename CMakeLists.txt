@@ -13,12 +13,12 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(OpenMP REQUIRED)
 find_package(Eigen3 3.4 REQUIRED)
 find_package(Ceres 2.1 REQUIRED)
-find_package(Fgt REQUIRED)
+# find_package(Fgt REQUIRED)
 
 add_subdirectory(src)
 
 if(BUILD_TESTS)
-  enable_testing()
+  include(CTest)
   add_subdirectory(tests)
 endif()
 

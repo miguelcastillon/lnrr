@@ -44,12 +44,12 @@ jobs:
           cd ceres-solver && mkdir build && cd build
           cmake .. && make -j2 && sudo make install
           cd ../..
-      - name: Install FGT
-        run: |
-          git clone https://github.com/miguelcastillon/fgt_threshold
-          cd fgt_threshold && mkdir build && cd build
-          cmake .. && make -j2 && sudo make install
-          cd ../..
+      # - name: Install FGT
+      #   run: |
+      #     git clone https://github.com/miguelcastillon/fgt_threshold
+      #     cd fgt_threshold && mkdir build && cd build
+      #     cmake .. && make -j2 && sudo make install
+      #     cd ../..
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build

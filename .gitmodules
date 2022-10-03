@@ -1,0 +1,7 @@
+[submodule "extern/pybind11"]
+	path = extern/pybind11
+	url = ../../pybind/pybind11
+	branch = stable
+[submodule "extern/fgt_threshold"]
+	path = extern/fgt_threshold
+	url = https://github.com/miguelcastillon/fgt_threshold
