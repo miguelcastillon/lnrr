@@ -80,8 +80,8 @@ TEST(Tests_E_Step, computeP) {
             << "Returned Pt1\n:" << scan_to_model.P_.pt1 << std::endl;
         EXPECT_TRUE(scan_to_model.P_.px.isApprox(d.P * d.X, 1e-4))
             << "Expected P\n:" << d.P << std::endl
-            << "Expected Px\n:" << d.P * d.X << std::endl
-            << "Returned Px\n:" << scan_to_model.P_.px << std::endl;
+            << "Expected PX\n:" << d.P * d.X << std::endl
+            << "Returned PX\n:" << scan_to_model.P_.px << std::endl;
     }
 }
 
@@ -105,7 +105,7 @@ TEST(Tests_E_Step, computeP_FGT) {
             << "Returned Pt1\n:" << scan_to_model.P_.pt1 << std::endl;
         EXPECT_TRUE(scan_to_model.P_.px.isApprox(d.P * d.X, 1e-4))
             << "Expected P\n:" << d.P << std::endl
-            << "Expected Py\n:" << d.P * d.X << std::endl
-            << "Returned Py\n:" << scan_to_model.P_.px << std::endl;
+            << "Expected PX\n:" << d.P * d.X << std::endl
+            << "Returned PX\n:" << scan_to_model.P_.px << std::endl;
     }
 }
