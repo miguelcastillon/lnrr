@@ -27,7 +27,7 @@ void ScanToModel::computeP() {
                               .array()
                               .pow(2)
                               .sum();
-            if (razn >= threshold_truncate_) {
+            if (razn >= threshold_truncate_2_) {
                 p(j) = 0.0;
             } else {
                 p(j) = std::exp(razn / ksig);
@@ -55,7 +55,7 @@ void ScanToModel::computeP_FGT() {
     std::unique_ptr<fgt::Transform> transform;
     transform = std::unique_ptr<fgt::Transform>(
         new fgt::DirectTree(moving_transformed_, bandwidth, fgt_epsilon_));
-    auto kt1 = transform->compute(fixed_, threshold_truncate_);
+    auto kt1 = transform->compute(fixed_, threshold_truncate_2_);
     double ndi = outliers_ / (1.0 - outliers_) * moving_transformed_.rows() /
                  fixed_.rows() * std::pow(2.0 * M_PI * sigma2_, 0.5 * cols);
     Eigen::ArrayXd denom_p = kt1.array() + ndi;
@@ -64,12 +64,12 @@ void ScanToModel::computeP_FGT() {
     transform = std::unique_ptr<fgt::Transform>(
         new fgt::DirectTree(fixed_, bandwidth, fgt_epsilon_));
     Vector p1 = transform->compute(moving_transformed_, 1 / denom_p,
-                                   threshold_truncate_);
+                                   threshold_truncate_2_);
     Matrix px(moving_transformed_.rows(), cols);
     for (size_t i = 0; i < cols; ++i) {
         px.col(i) = transform->compute(moving_transformed_,
                                        fixed_.col(i).array() / denom_p,
-                                       threshold_truncate_);
+                                       threshold_truncate_2_);
     }
     double l =
         -denom_p.log().sum() + cols * fixed_.rows() * std::log(sigma2_) / 2;

@@ -40,8 +40,6 @@ private:
 
     MatrixX3 RT_; // tranpose of the rotation matrices
 
-    Probabilities P_;
-
     double fgt_epsilon_ = FGT_EPSILON;
     double fgt_threshold_ = FGT_THRESHOLD;
 
@@ -51,14 +49,12 @@ private:
     int number_lines_;
     size_t max_iterations_;
     double outliers_;
-    double threshold_truncate_;
+    double threshold_truncate_2_;
     double sigma2_;
     double tolerance_;
 
     double defaultSigma2();
     void computeSigma2();
-    void computeP();
-    void computeP_FGT();
     void computeU();
     void computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
 
@@ -74,7 +70,7 @@ public:
           number_lines_(line_sizes.rows()),
           max_iterations_(DEFAULT_MAX_ITERATIONS),
           outliers_(DEFAULT_OUTLIERS),
-          threshold_truncate_(DEFAULT_THRESHOLD_TRUNCATE),
+          threshold_truncate_2_(DEFAULT_THRESHOLD_TRUNCATE),
           sigma2_(DEFAULT_SIGMA2),
           tolerance_(DEFAULT_TOLERANCE) {
         assert(line_sizes.sum() == moving.rows() &&
@@ -84,7 +80,11 @@ public:
 
     ~ScanToModel() {}
 
+    Probabilities P_;
+
     void initialize();
+    void computeP();
+    void computeP_FGT();
     void computeOne();
     Matrix getTransformedMoving();
     Result run();
@@ -105,7 +105,7 @@ public:
     }
     void setOutlierRate(const double& outliers) { outliers_ = outliers; }
     void setThresholdTruncate(const double& threshold) {
-        threshold_truncate_ = threshold;
+        threshold_truncate_2_ = pow(threshold, 2);
     }
     void setSigma2(const double& sigma2) { sigma2_ = sigma2; }
     void setTolerance(const double& tolerance) { tolerance_ = tolerance; }
@@ -120,7 +120,7 @@ public:
     double getLambda() { return lambda_; }
     size_t getMaxIterations() { return max_iterations_; }
     double getOutlierRate() { return outliers_; }
-    double getThresholdTruncate() { return threshold_truncate_; }
+    double getThresholdTruncate() { return threshold_truncate_2_; }
     double getSigma2() { return sigma2_; }
     double getTolerance() { return tolerance_; }
 };
