@@ -29,6 +29,7 @@ jobs:
           sudo make install
           export PATH=$HOME/cmake-install/bin:$PATH
           export CMAKE_PREFIX_PATH=$HOME/cmake-install:$CMAKE_PREFIX_PATH
+          cd ..
       - name: Install Eigen 3.4
         run: |
           wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
