@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <lnrr/scan_to_model.h>
+#include <lnrr_se3/scan_to_model.h>
 
 using namespace lnrr;
 
@@ -62,50 +62,50 @@ const double LAMBDA = 1.0;
 
 TEST(Tests_E_Step, computeP) {
     for (auto d : data) {
-        Vector line_sizes = Vector::Ones(d.Y.rows());
+        VectorInt line_sizes = VectorInt::Ones(d.Y.rows());
         ScanToModel scan_to_model(d.X, d.Y, BETA, LAMBDA, line_sizes);
         scan_to_model.setThresholdTruncate(d.distance_threshold);
         scan_to_model.setOutlierRate(d.w);
         scan_to_model.setSigma2(pow(d.sigma, 2));
         scan_to_model.initialize();
         scan_to_model.computeP();
-        EXPECT_TRUE(scan_to_model.P_.p1.isApprox(d.P.rowwise().sum(), 1e-4))
+        Probabilities P = scan_to_model.getP();
+        EXPECT_TRUE(P.p1.isApprox(d.P.rowwise().sum(), 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected P1\n:" << d.P.rowwise().sum() << std::endl
-            << "Returned P1\n:" << scan_to_model.P_.p1 << std::endl;
-        EXPECT_TRUE(scan_to_model.P_.pt1.isApprox(
-            d.P.colwise().sum().transpose(), 1e-4))
+            << "Returned P1\n:" << P.p1 << std::endl;
+        EXPECT_TRUE(P.pt1.isApprox(d.P.colwise().sum().transpose(), 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected Pt1\n:" << d.P.colwise().sum().transpose() << std::endl
-            << "Returned Pt1\n:" << scan_to_model.P_.pt1 << std::endl;
-        EXPECT_TRUE(scan_to_model.P_.px.isApprox(d.P * d.X, 1e-4))
+            << "Returned Pt1\n:" << P.pt1 << std::endl;
+        EXPECT_TRUE(P.px.isApprox(d.P * d.X, 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected PX\n:" << d.P * d.X << std::endl
-            << "Returned PX\n:" << scan_to_model.P_.px << std::endl;
+            << "Returned PX\n:" << P.px << std::endl;
     }
 }
 
 TEST(Tests_E_Step, computeP_FGT) {
     for (auto d : data) {
-        Vector line_sizes = Vector::Ones(d.Y.rows());
+        VectorInt line_sizes = VectorInt::Ones(d.Y.rows());
         ScanToModel scan_to_model(d.X, d.Y, BETA, LAMBDA, line_sizes);
         scan_to_model.setThresholdTruncate(d.distance_threshold);
         scan_to_model.setOutlierRate(d.w);
         scan_to_model.setSigma2(pow(d.sigma, 2));
         scan_to_model.initialize();
         scan_to_model.computeP_FGT();
-        EXPECT_TRUE(scan_to_model.P_.p1.isApprox(d.P.rowwise().sum(), 1e-4))
+        Probabilities P = scan_to_model.getP();
+        EXPECT_TRUE(P.p1.isApprox(d.P.rowwise().sum(), 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected P1\n:" << d.P.rowwise().sum() << std::endl
-            << "Returned P1\n:" << scan_to_model.P_.p1 << std::endl;
-        EXPECT_TRUE(scan_to_model.P_.pt1.isApprox(
-            d.P.colwise().sum().transpose(), 1e-4))
+            << "Returned P1\n:" << P.p1 << std::endl;
+        EXPECT_TRUE(P.pt1.isApprox(d.P.colwise().sum().transpose(), 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected Pt1\n:" << d.P.colwise().sum().transpose() << std::endl
-            << "Returned Pt1\n:" << scan_to_model.P_.pt1 << std::endl;
-        EXPECT_TRUE(scan_to_model.P_.px.isApprox(d.P * d.X, 1e-4))
+            << "Returned Pt1\n:" << P.pt1 << std::endl;
+        EXPECT_TRUE(P.px.isApprox(d.P * d.X, 1e-4))
             << "Expected P\n:" << d.P << std::endl
             << "Expected PX\n:" << d.P * d.X << std::endl
-            << "Returned PX\n:" << scan_to_model.P_.px << std::endl;
+            << "Returned PX\n:" << P.px << std::endl;
     }
 }

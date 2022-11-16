@@ -1,4 +1,4 @@
-#include <lnrr/utils/test_utils.h>
+#include <lnrr_se3/utils/test_utils.h>
 
 int main(int argc, char const* argv[]) {
     std::string filename_model, filename_scan, filename_scan_size,
@@ -33,7 +33,7 @@ int main(int argc, char const* argv[]) {
 
     MatrixX3 model = readFromTxtFile(filename_model);
     MatrixX3 scan = readFromTxtFile(filename_scan);
-    Vector line_sizes = readLineSizesFromTxtFile(filename_scan_size);
+    VectorInt line_sizes = readLineSizesFromTxtFile(filename_scan_size);
 
     std::cout << "Number of points in model: " << model.rows() << std::endl;
     std::cout << "Number of points in scan: " << scan.rows() << std::endl;

@@ -42,5 +42,32 @@ gtest_discover_tests(E_step_test)
 
 ################## 
 
+add_executable(jacobian_G_test jacobian_G_test.cpp)
+target_include_directories(jacobian_G_test PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
+    ${EIGEN3_INCLUDE_DIR} 
+    ${CERES_INCLUDE_DIR}
+    )
+target_link_libraries(jacobian_G_test 
+  GTest::gtest_main
+  Library-C++
+  )
+gtest_discover_tests(jacobian_G_test)
 
+################## 
 
+add_executable(jacobian_YR_T_test jacobian_YR_T_test.cpp)
+target_include_directories(jacobian_YR_T_test PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
+    ${EIGEN3_INCLUDE_DIR} 
+    ${CERES_INCLUDE_DIR}
+    )
+target_link_libraries(jacobian_YR_T_test 
+  GTest::gtest_main
+  Library-C++
+  )
+gtest_discover_tests(jacobian_YR_T_test)
+
+################## 
