@@ -1,5 +1,5 @@
 #include <fstream>
-#include <lnrr/scan_to_model.h>
+#include <lnrr_se3/scan_to_model.h>
 
 using namespace lnrr;
 
@@ -10,9 +10,8 @@ MatrixX3 readFromTxtFile(const std::string& file_name) {
     while (std::getline(file, line, ',')) {
         std::stringstream line_stream(line);
         double value;
-        while (line_stream >> value) {
+        while (line_stream >> value)
             values.push_back(value);
-        }
     }
     size_t rows = values.size() / 3;
 
@@ -26,31 +25,28 @@ MatrixX3 readFromTxtFile(const std::string& file_name) {
     return result;
 }
 
-Vector readLineSizesFromTxtFile(const std::string& file_name) {
+VectorInt readLineSizesFromTxtFile(const std::string& file_name) {
     std::ifstream file(file_name);
     std::string line;
     std::vector<double> values;
     while (std::getline(file, line)) {
         std::stringstream line_stream(line);
         double value;
-        while (line_stream >> value) {
+        while (line_stream >> value)
             values.push_back(value);
-        }
     }
     file.close();
-    Vector vector(values.size());
-    for (size_t i = 0; i < values.size(); i++) {
+    VectorInt vector(values.size());
+    for (size_t i = 0; i < values.size(); i++)
         vector[i] = values[i];
-    }
     return vector;
 }
 
 void writeResultToTxtFile(const std::string& file_name,
                           const MatrixX3& points) {
     std::ofstream file(file_name);
-    for (size_t i = 0; i < points.rows(); i++) {
+    for (size_t i = 0; i < points.rows(); i++)
         file << points(i, 0) << " " << points(i, 1) << " " << points(i, 2)
              << std::endl;
-    }
     file.close();
 }
