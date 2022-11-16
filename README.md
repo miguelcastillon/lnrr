@@ -42,21 +42,48 @@ If you want to know more about our underwater 3D scanner, check out [the paper](
 
 ### Dependencies
 
-Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), and [Ceres](http://ceres-solver.org/index.html).
-Please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + Ceres 2.0.
-
+Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), and [Ceres](http://ceres-solver.org/index.html) [please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + Ceres 2.1.]
 Moreover, our method uses Fast Gauss Transforms to compute the correspondence probability between each pair of points.
 Therefore, our method depends on
 [fgt](https://github.com/miguelcastillon/fgt_threshold), which is a fork of [this repository](https://github.com/gadomski/fgt).
+
+In summary, first do:
+```bash
+sudo apt install cmake libeigen3-dev
+```
+Then, in your `libraries` folder, compile Ceres:
+```bash
+git clone https://ceres-solver.googlesource.com/ceres-solver
+cd ceres-solver && mkdir build && cd build
+cmake .. \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_EXAMPLES=OFF
+make -jX 
+sudo make install
+cd ../..
+```
+Then compile fgt:
+```bash
+git clone https://github.com/miguelcastillon/fgt_threshold
+cd fgt_threshold && mkdir build && cd build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_OPENMP=ON \
+    -DBUILD_SHARED_LIBS=ON \
+    -DWITH_TESTS=OFF
+make -jX 
+sudo make install
+cd ../..
+```
 
 ### Compilation
 As usual, just download and unzip this repository in your preferred location and `cd` into it.
 Then:
 ```bash
-mkdir build
-cd build
-cmake ..
-make
+git clone https://github.com/miguelcastillon/lnrr
+cd lnrr && mkdir build && cd build
+cmake [OPTIONS] .. 
+make -jX 
 sudo make install
 ```
 
@@ -70,7 +97,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 ## Usage
 
 ```cpp
-#include <lnrr/scan_to_model.h>
+#include <lnrr_se3/scan_to_model.h>
 
 int main(int argc, char** argv) {
     lnrr::Matrix fixed = loadModel();
