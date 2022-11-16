@@ -53,3 +53,10 @@ jobs:
         working-directory: ./build
         run: |
           ctest                                            
+      - name: Compile example
+        working-directory: ./examples
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
