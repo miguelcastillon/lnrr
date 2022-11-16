@@ -12,6 +12,7 @@ jobs:
           sudo apt -y update
           sudo apt -y upgrade
           sudo apt install -y git \
+                              cmake \
                               openssh-client \
                               libgoogle-glog-dev \
                               libgflags-dev \
@@ -19,45 +20,36 @@ jobs:
                               libatlas-base-dev \
                               libeigen3-dev \
                               libsuitesparse-dev 
-      - name: Install CMake 2.24.2
-        run: |
-          wget https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2.tar.gz
-          tar -zxvf cmake-3.24.2.tar.gz
-          cd cmake-3.24.2
-          ./bootstrap --prefix=$HOME/cmake-install
-          make -j2
-          sudo make install
-          export PATH=$HOME/cmake-install/bin:$PATH
-          export CMAKE_PREFIX_PATH=$HOME/cmake-install:$CMAKE_PREFIX_PATH
-          cd ..
-      - name: Install Eigen 3.4
-        run: |
-          wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-          tar -zxvf eigen-3.4.0.tar.gz
-          cd eigen-3.4.0 && mkdir build && cd build
-          cmake .. && make -j2 && sudo make install
-          sudo ln -sf /usr/local/include/eigen3/Eigen /usr/local/include/Eigen
-          sudo ln -sf /usr/local/include/eigen3/unsupported /usr/local/include/unsupported
-          cd ../..
-      - name: Install Ceres
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Ceres 2.1.0
         run: |
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
-          cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF .. && make -j2 && sudo make install
+          cmake .. \
+              -DBUILD_TESTING=OFF \
+              -DBUILD_EXAMPLES=OFF 
+          make -j2 && sudo make install
           cd ../..
       - name: Install FGT
         run: |
           git clone https://github.com/miguelcastillon/fgt_threshold
           cd fgt_threshold && mkdir build && cd build
-          cmake .. && make -j2 && sudo make install
+          cmake .. \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DWITH_OPENMP=ON \
+              -DBUILD_SHARED_LIBS=ON \
+              -DWITH_TESTS=OFF
+          make -j2
+          sudo make install
           cd ../..
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Build
         run: |
-          mkdir build && cd build
-          cmake -DBUILD_TESTS=ON ..
+          mkdir build
+          cd build
+          cmake ..
           make
       - name: Test
+        working-directory: ./build
         run: |
           ctest                                            
