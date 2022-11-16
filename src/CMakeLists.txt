@@ -1,3 +1,8 @@
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DDEBUG)
+    message(WARNING "Compiling Debug mode. Information will be printed but performance will be slow. Compile on Release for best performance.")
+endif(CMAKE_BUILD_TYPE MATCHES Debug)
+
 add_library(Library-C++
     STATIC
     scan_to_model.cpp

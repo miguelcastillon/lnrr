@@ -26,20 +26,16 @@ if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-# if(NOT CMAKE_BUILD_TYPE)
-#   set(default_cmake_build_type "RelWithDebInfo")
-#   message(STATUS "Setting build type to '${default_cmake_build_type}' as none was specified.")
-#   set(CMAKE_BUILD_TYPE "${default_cmake_build_type}" CACHE
-#       STRING "Choose the type of build." FORCE)
-#   # Set the possible values of build type for cmake-gui
-#   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-#     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-# endif()
-# message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-# if(CMAKE_BUILD_TYPE MATCHES Debug)
-#   message(STATUS "Compiling Debug mode")
-#   add_compile_options(-DMODE_DEBUG)
-# endif(CMAKE_BUILD_TYPE MATCHES Debug)
+if(NOT CMAKE_BUILD_TYPE)
+  set(default_cmake_build_type "RelWithDebInfo")
+  message("Setting build type to '${default_cmake_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_cmake_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 
 

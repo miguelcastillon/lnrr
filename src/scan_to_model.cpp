@@ -134,39 +134,39 @@ void ScanToModel::initialize() {
 }
 
 void ScanToModel::computeOne() {
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     auto tic = std::chrono::high_resolution_clock::now();
     std::cout << "Computing P..." << std::endl;
-    // #endif
+#endif
     computeP_FGT();
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "P computed." << std::endl;
     auto toc = std::chrono::high_resolution_clock::now();
     double time_E =
         std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
             .count();
-    // #endif
+#endif
 
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     tic = std::chrono::high_resolution_clock::now();
     std::cout << "Computing M..." << std::endl;
-    // #endif
+#endif
     computeW();
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "M computed." << std::endl;
     toc = std::chrono::high_resolution_clock::now();
     double time_M =
         std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
             .count();
-    // #endif
+#endif
 
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     tic = std::chrono::high_resolution_clock::now();
     std::cout << "Computing other..." << std::endl;
-    // #endif
+#endif
     moving_transformed_ = getTransformedMoving();
     computeSigma2();
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "Other computed." << std::endl;
     toc = std::chrono::high_resolution_clock::now();
     double time_other =
@@ -182,20 +182,20 @@ void ScanToModel::computeOne() {
     std::cout << "time_other: " << time_other << " ("
               << time_other * 100 / time_total << "%)" << std::endl;
     std::cout << std::endl;
-    // #endif
+#endif
 }
 
 Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "Initializing non-rigid registration in DEBUG mode"
               << std::endl;
-    // #endif
+#endif
     initialize();
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "Initialization complete" << std::endl;
-    // #endif
+#endif
 
     size_t iter = 0;
 
@@ -208,14 +208,14 @@ Result ScanToModel::run() {
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;
         ++iter;
-        // #ifdef MODE_DEBUG
+#ifdef DEBUG
         std::cout << "Iteration " << iter << " complete. " << std::endl;
         std::cout << "  --> Tolerance = " << ntol << ". ";
         std::cout << "Convergence criteria: " << tolerance_ << std::endl;
         std::cout << "  --> sigma2 = " << sigma2_ << ". ";
         std::cout << "Convergence criteria: "
                   << 10 * std::numeric_limits<double>::epsilon() << std::endl;
-        // #endif
+#endif
     }
 
     auto toc = std::chrono::high_resolution_clock::now();
@@ -227,12 +227,12 @@ Result ScanToModel::run() {
     result.iterations = iter;
     result.line_transforms = computeTransformations(G_, W_);
 
-    // #ifdef MODE_DEBUG
+#ifdef DEBUG
     std::cout << "Non-rigid registration complete: ";
     std::cout << result.iterations << " iterations, ";
     std::cout << result.runtime.count() / 1e6 << " seconds. ";
     std::cout << "Final sigma2 = " << result.sigma2 << std::endl;
-    // #endif
+#endif
 
     return result;
 }
