@@ -26,7 +26,7 @@ Data data1 = {MatrixX3::Random(M, 3), MatrixX6::Random(L, 6)};
 Data data2 = {MatrixX3::Random(M, 3), MatrixX6::Random(L, 6)};
 std::vector<Data> data = {data0, data1, data2};
 
-TEST(Tests_Jacobian_G, ComputeJacobianG) {
+TEST(Tests_Jacobian_YR_T, ComputeJacobianYR_T) {
     for (auto d : data) {
         MatrixX6 W1 = d.W0 + EPSILON * Matrix::Ones(d.W0.rows(), d.W0.cols());
 
