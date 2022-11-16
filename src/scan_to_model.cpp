@@ -1,11 +1,6 @@
-#include <lnrr/scan_to_model.h>
+#include <lnrr_se3/scan_to_model.h>
 
 namespace lnrr {
-
-Matrix ScanToModel::getTransformedMoving() {
-    RT_ = computeRotationMatrices(G_, U_);
-    return C_ + D_ * RT_;
-}
 
 void ScanToModel::computeP() {
     double ksig = -2.0 * sigma2_;
@@ -86,51 +81,34 @@ double ScanToModel::defaultSigma2() {
            1000.; // 1000 here is a magic number
 }
 
-void ScanToModel::computeOptimalRotationCeres(const Matrix& S,
-                                              const Matrix& T) {
+void ScanToModel::computeW() {
     ceres::Problem problem;
     ceres::LossFunction* loss = NULL;
 
-    ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>* cost =
-        new ceres::DynamicAutoDiffCostFunction<CostFunctionScanToModelRot, 4>(
-            new CostFunctionScanToModelRot(G_, S, T, lambda_));
-    std::vector<double*> parameter_blocks;
-    parameter_blocks.push_back(U_.data());
-    cost->AddParameterBlock(U_.size());
-    cost->SetNumResiduals(U_.size());
-    problem.AddResidualBlock(cost, loss, parameter_blocks);
+    const Eigen::Map<const Vector> PX_vec(P_.px.data(), P_.px.size());
 
+    Matrix jacobianG = computeJacobianG(G_);
+
+    ceres::DynamicAutoDiffCostFunction<CostFunctionW>* cost =
+        new ceres::DynamicAutoDiffCostFunction<CostFunctionW>(
+            new CostFunctionW(moving_, G_, jacobianG / sigma2_, PX_vec, P_.p1,
+                              line_sizes_, lambda_));
+    std::vector<double*> parameter_blocks;
+    parameter_blocks.push_back(W_.data());
+    cost->AddParameterBlock(W_.size());
+    cost->SetNumResiduals(W_.size());
+    problem.AddResidualBlock(cost, loss, parameter_blocks);
     ceres::Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     options.check_gradients = false;
-    options.minimizer_type = ceres::LINE_SEARCH;
-    options.logging_type = ceres::SILENT;
-    options.function_tolerance = 1e-4;
+    // options.minimizer_type = ceres::LINE_SEARCH;
+    // options.logging_type = ceres::SILENT;
+    // options.function_tolerance = 1e-4;
 
     ceres::Solver::Summary summary;
     Solve(options, &problem, &summary);
 
     return;
-}
-
-void ScanToModel::computeU() {
-    Matrix lhs =
-        sigma2_ * lambda_ * Matrix::Identity(number_lines_, number_lines_) +
-        FT_ * P_.p1.asDiagonal() * F_ * G_;
-
-    A_ = lhs.partialPivLu().solve(FT_ * P_.px);
-    B_ = lhs.partialPivLu().solve(Matrix(FT_ * P_.p1.asDiagonal() * YD_));
-    GB_ = G_ * B_;
-
-    /// TODO: Why does a sparse D give better results?
-    D_ = YD_ - F_ * GB_;
-    C_ = FG_ * A_;
-    Matrix S = lambda_ * B_.transpose() * GB_ +
-               D_.transpose() * P_.p1.asDiagonal() * D_ / sigma2_;
-    Matrix T = -lambda_ * A_.transpose() * GB_ +
-               (P_.p1.asDiagonal() * C_ - P_.px).transpose() * D_ / sigma2_;
-
-    // computeOptimalRotationCeres(S, T); // Not computing optimal rotation
 }
 
 void ScanToModel::computeSigma2() {
@@ -146,17 +124,9 @@ void ScanToModel::computeSigma2() {
 void ScanToModel::initialize() {
     assert(fixed_.rows() > 0);
     assert(moving_.rows() > 0);
-    G_ = computeG(beta_, number_lines_);
-    F_ = computeF(moving_.rows(), line_sizes_);
-    FT_ = F_.transpose();
-    FG_ = F_ * G_;
-    H_ = computeH(moving_.rows(), line_sizes_);
-    YD_ = matrixAsSparseBlockDiag(moving_) * H_;
-    C_ = Matrix::Zero(moving_.rows(), 3);
-    D_ = YD_;
 
-    U_ = Matrix::Zero(number_lines_, 3);
-    V_ = Matrix::Zero(number_lines_, 3);
+    W_ = MatrixX6::Zero(number_lines_, 6);
+    G_ = computeG(beta_, number_lines_);
 
     if (sigma2_ == 0.0)
         sigma2_ = defaultSigma2();
@@ -164,23 +134,68 @@ void ScanToModel::initialize() {
 }
 
 void ScanToModel::computeOne() {
+    // #ifdef MODE_DEBUG
+    auto tic = std::chrono::high_resolution_clock::now();
+    std::cout << "Computing P..." << std::endl;
+    // #endif
     computeP_FGT();
-    computeU();
+    // #ifdef MODE_DEBUG
+    std::cout << "P computed." << std::endl;
+    auto toc = std::chrono::high_resolution_clock::now();
+    double time_E =
+        std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
+            .count();
+    // #endif
+
+    // #ifdef MODE_DEBUG
+    tic = std::chrono::high_resolution_clock::now();
+    std::cout << "Computing M..." << std::endl;
+    // #endif
+    computeW();
+    // #ifdef MODE_DEBUG
+    std::cout << "M computed." << std::endl;
+    toc = std::chrono::high_resolution_clock::now();
+    double time_M =
+        std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
+            .count();
+    // #endif
+
+    // #ifdef MODE_DEBUG
+    tic = std::chrono::high_resolution_clock::now();
+    std::cout << "Computing other..." << std::endl;
+    // #endif
     moving_transformed_ = getTransformedMoving();
     computeSigma2();
+    // #ifdef MODE_DEBUG
+    std::cout << "Other computed." << std::endl;
+    toc = std::chrono::high_resolution_clock::now();
+    double time_other =
+        std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
+            .count();
+
+    double time_total = time_E + time_M + time_other;
+    std::cout << "-----" << std::endl;
+    std::cout << "time_E: " << time_E << " (" << time_E * 100 / time_total
+              << "%)" << std::endl;
+    std::cout << "time_M: " << time_M << " (" << time_M * 100 / time_total
+              << "%)" << std::endl;
+    std::cout << "time_other: " << time_other << " ("
+              << time_other * 100 / time_total << "%)" << std::endl;
+    std::cout << std::endl;
+    // #endif
 }
 
 Result ScanToModel::run() {
     auto tic = std::chrono::high_resolution_clock::now();
 
-#ifdef MODE_DEBUG
+    // #ifdef MODE_DEBUG
     std::cout << "Initializing non-rigid registration in DEBUG mode"
               << std::endl;
-#endif
+    // #endif
     initialize();
-#ifdef MODE_DEBUG
+    // #ifdef MODE_DEBUG
     std::cout << "Initialization complete" << std::endl;
-#endif
+    // #endif
 
     size_t iter = 0;
 
@@ -193,14 +208,14 @@ Result ScanToModel::run() {
         ntol = std::abs((P_.l - l) / P_.l);
         l = P_.l;
         ++iter;
-#ifdef MODE_DEBUG
+        // #ifdef MODE_DEBUG
         std::cout << "Iteration " << iter << " complete. " << std::endl;
         std::cout << "  --> Tolerance = " << ntol << ". ";
         std::cout << "Convergence criteria: " << tolerance_ << std::endl;
         std::cout << "  --> sigma2 = " << sigma2_ << ". ";
         std::cout << "Convergence criteria: "
                   << 10 * std::numeric_limits<double>::epsilon() << std::endl;
-#endif
+        // #endif
     }
 
     auto toc = std::chrono::high_resolution_clock::now();
@@ -209,22 +224,16 @@ Result ScanToModel::run() {
         std::chrono::duration_cast<std::chrono::microseconds>(toc - tic);
     result.points = moving_transformed_;
     result.sigma2 = sigma2_;
-    // result.iterations = iter;
-#ifdef MODE_DEBUG
+    result.iterations = iter;
+    result.line_transforms = computeTransformations(G_, W_);
+
+    // #ifdef MODE_DEBUG
     std::cout << "Non-rigid registration complete: ";
     std::cout << result.iterations << " iterations, ";
     std::cout << result.runtime.count() / 1e6 << " seconds. ";
     std::cout << "Final sigma2 = " << result.sigma2 << std::endl;
-#endif
+    // #endif
 
-    MatrixX3 GV = G_ * A_ + GB_ * RT_;
-    MatrixX3 GU = G_ * U_;
-    for (int i = 0; i < number_lines_; i++) {
-        RigidTransformRPY line_transform;
-        line_transform.xyz = GV.row(i);
-        line_transform.rpy = GU.row(i);
-        result.line_transforms.push_back(line_transform);
-    }
     return result;
 }
 
