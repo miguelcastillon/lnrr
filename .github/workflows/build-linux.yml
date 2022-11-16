@@ -22,14 +22,14 @@ jobs:
                               libsuitesparse-dev 
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install Ceres 2.1.0
+      - name: Install Ceres
         run: |
           git clone https://ceres-solver.googlesource.com/ceres-solver
           cd ceres-solver && mkdir build && cd build
           cmake .. \
               -DBUILD_TESTING=OFF \
               -DBUILD_EXAMPLES=OFF 
-          make -j2 && sudo make install
+          make && sudo make install
           cd ../..
       - name: Install FGT
         run: |
@@ -40,7 +40,7 @@ jobs:
               -DWITH_OPENMP=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DWITH_TESTS=OFF
-          make -j2
+          make
           sudo make install
           cd ../..
       - name: Build
@@ -49,6 +49,7 @@ jobs:
           cd build
           cmake ..
           make
+          sudo make install
       - name: Test
         working-directory: ./build
         run: |
