@@ -102,11 +102,20 @@ void ScanToModel::computeW() {
     options.minimizer_progress_to_stdout = true;
     options.check_gradients = false;
     // options.minimizer_type = ceres::LINE_SEARCH;
-    // options.logging_type = ceres::SILENT;
     // options.function_tolerance = 1e-4;
+
+#ifdef DEBUG
+    options.logging_type = ceres::PER_MINIMIZER_ITERATION;
+#else
+    options.logging_type = ceres::SILENT;
+#endif
 
     ceres::Solver::Summary summary;
     Solve(options, &problem, &summary);
+
+#ifdef DEBUG
+    std::cout << summary.FullReport() << std::endl;
+#endif
 
     return;
 }
