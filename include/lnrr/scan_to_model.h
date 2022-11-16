@@ -1,9 +1,9 @@
 #pragma once
 
-#include <lnrr_se3/ceres/cost_W.h>
-#include <lnrr_se3/utils/conversions.h>
-#include <lnrr_se3/utils/operations.h>
-#include <lnrr_se3/utils/types.h>
+#include <lnrr/ceres/cost_W.h>
+#include <lnrr/utils/conversions.h>
+#include <lnrr/utils/operations.h>
+#include <lnrr/utils/types.h>
 
 #include <fgt.hpp>
 

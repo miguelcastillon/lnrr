@@ -1,5 +1,5 @@
 #include <fstream>
-#include <lnrr_se3/scan_to_model.h>
+#include <lnrr/scan_to_model.h>
 
 using namespace lnrr;
 

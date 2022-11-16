@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <lnrr_se3/utils/conversions.h>
+#include <lnrr/utils/conversions.h>
 
 struct RotationEquivalence {
     double roll;

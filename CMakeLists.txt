@@ -5,8 +5,8 @@ set(PROJECT_SOVERSION 0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
-# add_compile_options(-O3)
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+add_compile_options(-O3)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
 option(BUILD_TESTS "Build test suite" ON)
 
@@ -14,12 +14,10 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 find_package(OpenMP REQUIRED)
 find_package(Eigen3 3.3.7 REQUIRED)
-find_package(Ceres 2.1 REQUIRED)
+find_package(Ceres 2.2 REQUIRED)
 find_package(Fgt REQUIRED)
 
 add_subdirectory(src)
-
-add_subdirectory(examples)
 
 if(BUILD_TESTS)
   include(CTest)
@@ -39,10 +37,10 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 
 
-# include(CMakePackageConfigHelpers)
-# write_basic_package_version_file(${PROJECT_BINARY_DIR}/lnrr-config-version.cmake VERSION ${LNRR_VERSION} COMPATIBILITY AnyNewerVersion)
-# configure_file(cmake/lnrr-config.cmake ${PROJECT_BINARY_DIR}/lnrr-config.cmake @ONLY)
-# install(FILES ${PROJECT_BINARY_DIR}/lnrr-config.cmake ${PROJECT_BINARY_DIR}/lnrr-config-version.cmake DESTINATION lib/cmake/lnrr)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(${PROJECT_BINARY_DIR}/lnrr-config-version.cmake VERSION ${LNRR_VERSION} COMPATIBILITY AnyNewerVersion)
+configure_file(cmake/lnrr-config.cmake ${PROJECT_BINARY_DIR}/lnrr-config.cmake @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/lnrr-config.cmake ${PROJECT_BINARY_DIR}/lnrr-config-version.cmake DESTINATION lib/cmake/lnrr)
 
 
 # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
@@ -65,12 +63,12 @@ message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 #         -Wno-unknown-pragmas
 #         )
 # endif()
-# install(TARGETS Library-C++ DESTINATION lib EXPORT lnrr-targets)
-# install(DIRECTORY include/lnrr DESTINATION include)
-# install(EXPORT lnrr-targets DESTINATION lib/cmake/lnrr NAMESPACE Lnrr::)
+install(TARGETS Library-C++ DESTINATION lib EXPORT lnrr-targets)
+install(DIRECTORY include/lnrr DESTINATION include)
+install(EXPORT lnrr-targets NAMESPACE Lnrr:: DESTINATION lib/cmake/lnrr)
 
-# # Create uninstall command
-# configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
-#                "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
-# add_custom_target(uninstall "${CMAKE_COMMAND}" -P
-#                   "${CMAKE_BINARY_DIR}/uninstall_target.cmake")
+# Create uninstall command
+configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
+               "${CMAKE_BINARY_DIR}/uninstall_target.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
+                  "${CMAKE_BINARY_DIR}/uninstall_target.cmake")

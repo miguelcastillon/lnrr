@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <lnrr_se3/utils/operations.h>
-#include <lnrr_se3/utils/types.h>
+#include <lnrr/utils/operations.h>
+#include <lnrr/utils/types.h>
 
 using namespace lnrr;
 

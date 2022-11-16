@@ -97,7 +97,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 ## Usage
 
 ```cpp
-#include <lnrr_se3/scan_to_model.h>
+#include <lnrr/scan_to_model.h>
 
 int main(int argc, char** argv) {
     lnrr::Matrix fixed = loadModel();
@@ -125,16 +125,17 @@ add_library(my-new-library
 target_link_libraries(my-new-library
     PUBLIC
     Lnrr::Library-C++
-    ${CERES_LIBRARIES}
     )
 ```
+
+Check the folder `examples` to see how to write a `.cpp` file and a `CMakeLists.txt` for your project.
 
 ## Example
 
 To run the code with the example model and scan in the folder `data`, you can just run the test. 
-From `build`:
+From `examples/build`:
 ```bash
-./examples/lnrr ../data/stanford-bunny_dense_occluded.txt ../data/scan.txt ../data/scan_linesizes.txt ../data/scan_registered.txt 15 100 0.005
+./lnrr_example ../data/stanford-bunny_dense_occluded.txt ../data/scan.txt ../data/scan_linesizes.txt ../data/scan_registered.txt 15 100 0.005
 ```
 Converting between `.pcd` and `.txt` files is easy using PCL, but the code is not added here to limit the number of dependencies.
 

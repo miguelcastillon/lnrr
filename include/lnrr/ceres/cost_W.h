@@ -1,17 +1,16 @@
 #pragma once
 
 #include <ceres/ceres.h>
-#include <lnrr_se3/utils/conversions.h>
-#include <lnrr_se3/utils/operations.h>
-#include <lnrr_se3/utils/types.h>
+#include <lnrr/utils/conversions.h>
+#include <lnrr/utils/operations.h>
+#include <lnrr/utils/types.h>
 
 namespace lnrr {
 class CostFunctionW {
 public:
     CostFunctionW(const Matrix& moving, const Matrix& G,
                   const Matrix& jacobianG, const Vector& PX_vec,
-                  const Vector& P1,
-                  const VectorInt& line_sizes,
+                  const Vector& P1, const VectorInt& line_sizes,
                   const double& lambda)
         : moving_(moving),
           G_(G),

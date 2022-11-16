@@ -1,4 +1,4 @@
-#include <lnrr_se3/utils/test_utils.h>
+#include <lnrr/utils/test_utils.h>
 
 int main(int argc, char const* argv[]) {
     std::string filename_model, filename_scan, filename_scan_size,

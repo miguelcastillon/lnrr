@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lnrr_se3/utils/types.h>
+#include <lnrr/utils/types.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
