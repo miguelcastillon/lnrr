@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.16)
 project(lnrr CXX)
 set(LNRR_VERSION 0.1.0)
 set(PROJECT_SOVERSION 0)
@@ -8,10 +8,12 @@ set(CXX_STANDARD_REQUIRED ON)
 # add_compile_options(-O3)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 
+option(BUILD_TESTS "Build test suite" ON)
+
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 find_package(OpenMP REQUIRED)
-find_package(Eigen3 3.4 REQUIRED)
+find_package(Eigen3 3.3.7 REQUIRED)
 find_package(Ceres 2.1 REQUIRED)
 find_package(Fgt REQUIRED)
 
@@ -69,13 +71,13 @@ endif()
 # install(DIRECTORY include/lnrr DESTINATION include)
 # install(EXPORT lnrr-targets DESTINATION lib/cmake/lnrr NAMESPACE Lnrr::)
 
-# set(EXECUTABLE_OUTPUT_PATH ..)
-# add_executable(test_lnrr
-#     tests/test_lnrr.cpp
-#     )
-# target_link_libraries(test_lnrr
-#     Library-C++
-#     )
+set(EXECUTABLE_OUTPUT_PATH ..)
+add_executable(test_lnrr
+    tests/test_lnrr.cpp
+    )
+target_link_libraries(test_lnrr
+    Library-C++
+    )
 
 # # Create uninstall command
 # configure_file("${CMAKE_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
