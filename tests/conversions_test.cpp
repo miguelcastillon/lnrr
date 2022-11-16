@@ -56,9 +56,11 @@ TEST(ConversionsTests, TestRpy2Quaternion) {
             << "i: " << i << std::endl
             << "roll: " << data[i].roll << std::endl
             << "pitch: " << data[i].pitch << std::endl
-            << "yaw: " << data[i].yaw << std::endl;
-            // << "q: " << data[i].q << std::endl
-            // << "q_function: " << q_function << std::endl;
+            << "yaw: " << data[i].yaw << std::endl
+            << "q.w(): " << data[i].q.w() << ", "
+            << "q.vec(): " << data[i].q.vec() << std::endl
+            << "q_function.w(): " << q_function.w() << ", "
+            << "q_function.vec(): " << q_function.vec() << std::endl;
     }
 }
 
@@ -67,17 +69,20 @@ TEST(ConversionsTests, TestQuaternion2rpy) {
         Eigen::Vector3d rpy = lnrr::conversions::quaternion2rpy(data[i].q);
         EXPECT_NEAR(data[i].roll, rpy[0], 1e-6)
             << "i: " << i << std::endl
-            // << "q: " << data[i].q << std::endl
+            << "q.w(): " << data[i].q.w() << ", "
+            << "q.vec(): " << data[i].q.vec() << std::endl
             << "roll: " << data[i].roll << std::endl
             << "roll_function: " << rpy[0] << std::endl;
         EXPECT_NEAR(data[i].pitch, rpy[1], 1e-6)
             << "i: " << i << std::endl
-            // << "q: " << data[i].q << std::endl
+            << "q.w(): " << data[i].q.w() << ", "
+            << "q.vec(): " << data[i].q.vec() << std::endl
             << "pitch: " << data[i].pitch << std::endl
             << "pitch_function: " << rpy[1] << std::endl;
         EXPECT_NEAR(data[i].yaw, rpy[2], 1e-6)
             << "i: " << i << std::endl
-            // << "q: " << data[i].q << std::endl
+            << "q.w(): " << data[i].q.w() << ", "
+            << "q.vec(): " << data[i].q.vec() << std::endl
             << "yaw: " << data[i].yaw << std::endl
             << "yaw_function: " << rpy[2] << std::endl;
     }
