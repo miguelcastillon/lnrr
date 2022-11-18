@@ -27,8 +27,6 @@ private:
     Matrix G_;
     MatrixX6 W_;
 
-    MatrixX3 RT_; // tranpose of the rotation matrices
-
     double fgt_epsilon_ = FGT_EPSILON;
     double fgt_threshold_ = FGT_THRESHOLD;
 
@@ -44,7 +42,6 @@ private:
 
     double defaultSigma2();
     void computeSigma2();
-    void computeW();
 
 public:
     ScanToModel(const MatrixX3& fixed, const MatrixX3& moving,
@@ -71,6 +68,7 @@ public:
     void initialize();
     void computeP();
     void computeP_FGT();
+    void computeW();
     void computeOne();
     MatrixX3 getTransformedMoving() {
         return computeTransformedMoving(moving_, G_, W_, line_sizes_);
@@ -78,7 +76,7 @@ public:
     Result run();
 
     // Set functions
-
+    void setP(const Probabilities& P) { P_ = P; }
     void setFixed(const MatrixX3& fixed) { fixed_ = fixed; }
     void setMoving(const MatrixX3& moving) { moving_ = moving; }
     void setLineSizes(const VectorInt& line_sizes) {
@@ -100,6 +98,7 @@ public:
 
     // Get functions
     Probabilities getP() { return P_; }
+    MatrixX6 getW() { return W_; }
     MatrixX3 getFixed() { return fixed_; }
     MatrixX3 getMoving() { return moving_; }
     VectorInt getLineSizes() { return line_sizes_; }

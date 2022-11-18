@@ -56,7 +56,7 @@ private:
     Matrix jacobianG_;
     Vector PX_vec_;
     Vector P1_;
-    Eigen::Matrix<int, Eigen::Dynamic, 1> line_sizes_;
+    VectorInt line_sizes_;
     double lambda_;
 };
 } // namespace lnrr

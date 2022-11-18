@@ -71,3 +71,18 @@ target_link_libraries(jacobian_YR_T_test
 gtest_discover_tests(jacobian_YR_T_test)
 
 ################## 
+
+add_executable(M_step_test M_step_test.cpp)
+target_include_directories(M_step_test PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
+    ${EIGEN3_INCLUDE_DIR} 
+    ${CERES_INCLUDE_DIR}
+    )
+target_link_libraries(M_step_test 
+  GTest::gtest_main
+  Library-C++
+  )
+gtest_discover_tests(M_step_test)
+
+################## 

@@ -13,7 +13,6 @@ const int NUMBER_POINTS_LINE = 10;
 const int M = L * NUMBER_POINTS_LINE;
 const VectorInt LINE_SIZES = VectorInt::Ones(L) * NUMBER_POINTS_LINE;
 const Matrix G = Matrix::Identity(L, L); // If G is identity, then T = W
-const double BETA = 1.0;
 const double EPSILON = 1e-5;
 
 struct Data {

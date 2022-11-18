@@ -61,7 +61,6 @@ MatrixT<T> computeJacobianPointComposition(
                 for (size_t j = 0; j < jacobian_block.cols(); j++)
                     J(i * number_points_M + m, j * number_lines + l) =
                         jacobian_block(i, j);
-
             m++;
         }
     }
@@ -103,6 +102,11 @@ template <typename T>
 MatrixX3T<T> computeTransformedMoving(
     const MatrixX3T<T>& moving, const MatrixT<T>& G, const MatrixX6T<T>& W,
     const Eigen::Matrix<int, Eigen::Dynamic, 1>& line_sizes) {
+
+    assert(G.rows() == W.rows());
+    assert(G.rows() == line_sizes.size());
+    assert(moving.rows() == line_sizes.sum());
+
     int number_lines = G.rows();
 
     std::vector<RigidTransform<T>> T_lines = computeTransformations(G, W);
@@ -116,6 +120,37 @@ MatrixX3T<T> computeTransformedMoving(
             y_m(1) = moving(m, 1);
             y_m(2) = moving(m, 2);
             Vector3T<T> result = T_lines[l].rot_mat * y_m + T_lines[l].xyz;
+            transformed_moving(m, 0) = result(0);
+            transformed_moving(m, 1) = result(1);
+            transformed_moving(m, 2) = result(2);
+            m++;
+        }
+    }
+    assert(m == moving.rows());
+    return transformed_moving;
+}
+
+template <typename T>
+MatrixX3T<T> computeTransformedMoving(
+    const MatrixX3T<T>& moving, std::vector<RigidTransform<T>> transforms,
+    const Eigen::Matrix<int, Eigen::Dynamic, 1>& line_sizes) {
+
+    assert(transforms.size() == line_sizes.size());
+    assert(moving.rows() == line_sizes.sum());
+
+    int number_lines = transforms.size();
+
+    MatrixX3T<T> transformed_moving(moving.rows(), 3);
+    int m = 0;
+    // #pragma omp parallel private(m)
+    for (size_t l = 0; l < number_lines; l++) {
+        for (size_t j = 0; j < line_sizes[l]; j++) {
+            Vector3T<T> y_m;
+            y_m(0) = moving(m, 0);
+            y_m(1) = moving(m, 1);
+            y_m(2) = moving(m, 2);
+            Vector3T<T> result =
+                transforms[l].rot_mat * y_m + transforms[l].xyz;
             transformed_moving(m, 0) = result(0);
             transformed_moving(m, 1) = result(1);
             transformed_moving(m, 2) = result(2);

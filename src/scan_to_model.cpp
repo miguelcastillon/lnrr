@@ -101,8 +101,16 @@ void ScanToModel::computeW() {
     ceres::Solver::Options options;
     options.minimizer_progress_to_stdout = true;
     options.check_gradients = false;
-    // options.minimizer_type = ceres::LINE_SEARCH;
-    // options.function_tolerance = 1e-4;
+
+    /**
+     * In general, we would like to find a *good enough* W, so that we can
+     * recompute a better P matrix.
+     * However, in the M_step_test we only do 1 iteration (because we assume P
+     * is known). In that case, not increasing the max_num_iterations may lead
+     * to a failing test.
+     */
+    // options.max_num_iterations = 500;
+    // options.parameter_tolerance = 1e-5;
 
 #ifdef DEBUG
     options.logging_type = ceres::PER_MINIMIZER_ITERATION;
@@ -117,6 +125,12 @@ void ScanToModel::computeW() {
     std::cout << summary.FullReport() << std::endl;
 #endif
 
+#ifdef DEBUG
+    if (summary.termination_type != ceres::CONVERGENCE) {
+        throw(lnrr_error("Numerical solver has not converged. Final status: " +
+                         summary.termination_type));
+    }
+#endif
     return;
 }
 
@@ -160,7 +174,12 @@ void ScanToModel::computeOne() {
     tic = std::chrono::high_resolution_clock::now();
     std::cout << "Computing M..." << std::endl;
 #endif
-    computeW();
+    try {
+        computeW();
+    } catch (const lnrr_error& e) {
+        std::cerr << e.what() << '\n';
+    }
+
 #ifdef DEBUG
     std::cout << "M computed." << std::endl;
     toc = std::chrono::high_resolution_clock::now();
