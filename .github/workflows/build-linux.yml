@@ -1,0 +1,63 @@
+# Based on GTSAM file (by @ProfFan)
+name: CI Linux
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt -y update
+          sudo apt -y upgrade
+          sudo apt install -y git \
+                              cmake \
+                              openssh-client \
+                              libgoogle-glog-dev \
+                              libgflags-dev \
+                              libgtest-dev \
+                              libatlas-base-dev \
+                              libeigen3-dev \
+                              libsuitesparse-dev 
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Ceres
+        run: |
+          git clone https://ceres-solver.googlesource.com/ceres-solver
+          cd ceres-solver && mkdir build && cd build
+          cmake .. \
+              -DBUILD_TESTING=OFF \
+              -DBUILD_EXAMPLES=OFF 
+          make && sudo make install
+          cd ../..
+      - name: Install FGT
+        run: |
+          git clone https://github.com/miguelcastillon/fgt_threshold
+          cd fgt_threshold && mkdir build && cd build
+          cmake .. \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DWITH_OPENMP=ON \
+              -DBUILD_SHARED_LIBS=ON \
+              -DWITH_TESTS=OFF
+          make
+          sudo make install
+          cd ../..
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+          sudo make install
+      - name: Test
+        working-directory: ./build
+        run: |
+          ctest                                            
+      - name: Compile example
+        working-directory: ./examples
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make

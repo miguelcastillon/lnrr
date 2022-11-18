@@ -33,7 +33,7 @@ int main(int argc, char const* argv[]) {
 
     MatrixX3 model = readFromTxtFile(filename_model);
     MatrixX3 scan = readFromTxtFile(filename_scan);
-    Vector line_sizes = readLineSizesFromTxtFile(filename_scan_size);
+    VectorInt line_sizes = readLineSizesFromTxtFile(filename_scan_size);
 
     std::cout << "Number of points in model: " << model.rows() << std::endl;
     std::cout << "Number of points in scan: " << scan.rows() << std::endl;
@@ -44,9 +44,12 @@ int main(int argc, char const* argv[]) {
     ScanToModel scan_to_model(model, scan, beta, lambda, line_sizes);
     scan_to_model.setMaxIterations(30);
     scan_to_model.setThresholdTruncate(threshold_truncate);
-    std::cout << "Starting registration (compile LNRR in DEBUG mode to get "
-                 "information at each iteration)"
-              << std::endl;
+    std::cout << "Starting registration" << std::endl;
+#ifndef DEBUG
+    std::cout
+        << "(compile LNRR in DEBUG mode to get information at each iteration)"
+        << std::endl;
+#endif
     Result result = scan_to_model.run();
     std::cout
         << "Registration finished, writing registered scan in output txt file"
