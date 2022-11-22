@@ -87,11 +87,9 @@ void ScanToModel::computeW() {
 
     const Eigen::Map<const Vector> PX_vec(P_.px.data(), P_.px.size());
 
-    Matrix jacobianG = computeJacobianG(G_);
-
     ceres::DynamicAutoDiffCostFunction<CostFunctionW>* cost =
         new ceres::DynamicAutoDiffCostFunction<CostFunctionW>(
-            new CostFunctionW(moving_, G_, jacobianG / sigma2_, PX_vec, P_.p1,
+            new CostFunctionW(moving_, G_, jacobianG_ / sigma2_, PX_vec, P_.p1,
                               line_sizes_, lambda_));
     std::vector<double*> parameter_blocks;
     parameter_blocks.push_back(W_.data());
@@ -150,6 +148,7 @@ void ScanToModel::initialize() {
 
     W_ = MatrixX6::Zero(number_lines_, 6);
     G_ = computeG(beta_, number_lines_);
+    jacobianG_ = computeJacobianG(G_);
 
     if (sigma2_ == 0.0)
         sigma2_ = defaultSigma2();
@@ -157,6 +156,13 @@ void ScanToModel::initialize() {
 }
 
 void ScanToModel::computeOne() {
+    assert(fixed_.rows() > 0);
+    assert(moving_.rows() > 0);
+    assert(number_lines_ > 0);
+    assert(W_.rows() == number_lines_ &&
+           "Are you sure you called initialize()?");
+    assert(G_.rows() == number_lines_ &&
+           "Are you sure you called initialize()?");
 #ifdef DEBUG
     auto tic = std::chrono::high_resolution_clock::now();
     std::cout << "Computing P..." << std::endl;

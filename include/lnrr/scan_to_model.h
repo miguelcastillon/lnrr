@@ -25,6 +25,7 @@ private:
     Probabilities P_;
 
     Matrix G_;
+    Sparse jacobianG_;
     MatrixX6 W_;
 
     double fgt_epsilon_ = FGT_EPSILON;

@@ -34,7 +34,7 @@ TEST(Tests_Jacobian_YR_T, ComputeJacobianYR_T) {
         std::vector<RigidTransform<double>> T_lines =
             computeTransformations(G, d.W0);
 
-        Matrix jYRT =
+        Sparse jYRT =
             computeJacobianPointComposition(T_lines, d.moving, LINE_SIZES);
 
         Vector epsilon_vector = Vector::Ones(6 * L) * EPSILON;

@@ -19,19 +19,26 @@ inline Matrix computeG(const double& beta, const int& number_lines) {
 }
 
 template <typename T>
-MatrixT<T> computeJacobianG(const MatrixT<T>& G) {
+SparseT<T> computeJacobianG(const MatrixT<T>& G) {
     assert(G.rows() == G.cols());
     int number_lines = G.rows();
-    MatrixT<T> JG = MatrixT<T>::Zero(number_lines * 6, number_lines * 6);
-    for (Eigen::Index block = 0; block < 6; block++)
-        JG.block(block * number_lines, block * number_lines, number_lines,
-                 number_lines) = G;
+    SparseT<T> JG(number_lines * 6, number_lines * 6);
+    std::vector<Eigen::Triplet<T>> tripletList;
+    tripletList.reserve(6 * number_lines * number_lines);
 
+    for (Eigen::Index block = 0; block < 6; block++)
+        for (Eigen::Index i = 0; i < number_lines; i++)
+            for (Eigen::Index j = 0; j < number_lines; j++)
+                tripletList.push_back(
+                    Eigen::Triplet<T>(block * number_lines + i,
+                                      block * number_lines + j, G(i, j)));
+
+    JG.setFromTriplets(tripletList.begin(), tripletList.end());
     return JG;
 }
 
 template <typename T>
-MatrixT<T> computeJacobianPointComposition(
+SparseT<T> computeJacobianPointComposition(
     std::vector<RigidTransform<T>> T_lines, MatrixX3T<T>& moving,
     const Eigen::Matrix<int, Eigen::Dynamic, 1>& line_sizes) {
     int number_lines = T_lines.size();
@@ -39,7 +46,9 @@ MatrixT<T> computeJacobianPointComposition(
     assert(number_lines > 0);
     assert(number_points_M > 0);
 
-    MatrixT<T> J = MatrixT<T>::Zero(3 * number_points_M, 6 * number_lines);
+    SparseT<T> J(3 * number_points_M, 6 * number_lines);
+    std::vector<Eigen::Triplet<T>> tripletList;
+    tripletList.reserve(3 * 6 * number_lines);
 
     int m = 0;
     for (int l = 0; l < number_lines; l++) {
@@ -59,17 +68,23 @@ MatrixT<T> computeJacobianPointComposition(
 
             for (size_t i = 0; i < jacobian_block.rows(); i++)
                 for (size_t j = 0; j < jacobian_block.cols(); j++)
-                    J(i * number_points_M + m, j * number_lines + l) =
-                        jacobian_block(i, j);
+                    tripletList.push_back(Eigen::Triplet<T>(
+                        i * number_points_M + m, j * number_lines + l,
+                        jacobian_block(i, j)));
             m++;
         }
     }
+    J.setFromTriplets(tripletList.begin(), tripletList.end());
     return J;
 }
 
 template <typename T>
 std::vector<RigidTransform<T>> computeTransformations(const MatrixT<T>& G,
                                                       const MatrixX6T<T>& W) {
+#ifdef DEBUG
+    auto tic = std::chrono::high_resolution_clock::now();
+#endif
+
     assert(G.rows() == G.cols());
     assert(G.rows() == W.rows());
     assert(W.cols() == 6);
@@ -80,6 +95,17 @@ std::vector<RigidTransform<T>> computeTransformations(const MatrixT<T>& G,
     T_lines.resize(number_lines);
 
     MatrixT<T> GW = G * W;
+#ifdef DEBUG
+    auto toc = std::chrono::high_resolution_clock::now();
+    double time_1 =
+        std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
+            .count();
+
+    tic = std::chrono::high_resolution_clock::now();
+#endif
+
+// This for loop is the bottleneck
+#pragma omp parallel for
     for (size_t l = 0; l < number_lines; l++) {
         T_lines[l].xyz(0) = GW(l, 0);
         T_lines[l].xyz(1) = GW(l, 1);
@@ -91,10 +117,30 @@ std::vector<RigidTransform<T>> computeTransformations(const MatrixT<T>& G,
         T angle = rotation.norm();
         if (abs(angle) > T(0.0)) {
             Vector3T<T> axis = rotation / angle;
-            T_lines[l].rot_mat = Matrix3T<T>(Eigen::AngleAxis<T>(angle, axis));
-        } else
+            T_lines[l].rot_mat =
+                Eigen::AngleAxis<T>(angle, axis).toRotationMatrix();
+        } else {
             T_lines[l].rot_mat.setIdentity();
     }
+    }
+
+#ifdef DEBUG
+    toc = std::chrono::high_resolution_clock::now();
+    double time_2 =
+        std::chrono::duration_cast<std::chrono::microseconds>(toc - tic)
+            .count();
+
+    double time_total = time_1 + time_2;
+#if false
+    std::cout << "*******" << std::endl;
+    std::cout << "time_1: " << time_1 << " (" << time_1 * 100 / time_total
+              << "%)" << std::endl;
+    std::cout << "time_2: " << time_2 << " (" << time_2 * 100 / time_total
+              << "%)" << std::endl;
+    std::cout << "*******" << std::endl;
+#endif
+#endif
+
     return T_lines;
 }
 

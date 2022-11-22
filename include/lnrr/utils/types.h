@@ -15,7 +15,7 @@ public:
 };
 
 typedef Eigen::MatrixXd Matrix;
-typedef Eigen::SparseMatrix<double> SparseMatrix;
+typedef Eigen::SparseMatrix<double> Sparse;
 typedef Eigen::Matrix3d Matrix3;
 typedef Eigen::MatrixX3d MatrixX3;
 typedef Eigen::Matrix<double, Eigen::Dynamic, 6> MatrixX6;
@@ -25,6 +25,8 @@ typedef Eigen::Vector3d Vector3;
 
 template <typename T>
 using MatrixT = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
+template <typename T>
+using SparseT = Eigen::SparseMatrix<T>;
 template <typename T>
 using Matrix3T = Eigen::Matrix<T, 3, 3>;
 template <typename T>
