@@ -154,8 +154,6 @@ Then, from `examples/build` you can run it like this:
     0.03
 ```
 
-Converting between `.pcd` and `.txt` files is easy using PCL, but the code is not added here to limit the number of dependencies.
-
 ## Contributing
 
 Please feel free to create [issues](https://github.com/miguelcastillon/lnrr/issues) and [pull requests](https://github.com/miguelcastillon/lnrr/pulls), they will be much appreciated.
