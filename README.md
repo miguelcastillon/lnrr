@@ -42,14 +42,17 @@ If you want to know more about our underwater 3D scanner, check out [the paper](
 
 ### Dependencies
 
-Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), and [Ceres](http://ceres-solver.org/index.html) [please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + Ceres 2.1.]
+Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), [PCL](https://pointclouds.org/) and [Ceres](http://ceres-solver.org/index.html) [please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + PCL 1.10 + Ceres 2.2.]
 Moreover, our method uses Fast Gauss Transforms to compute the correspondence probability between each pair of points.
 Therefore, our method depends on
 [fgt](https://github.com/miguelcastillon/fgt_threshold), which is a fork of [this repository](https://github.com/gadomski/fgt).
 
 In summary, first do:
 ```bash
-sudo apt install cmake libeigen3-dev
+sudo apt install \
+    cmake \
+    libeigen3-dev \
+    libpcl-dev
 ```
 Then, in your `libraries` folder, compile Ceres:
 ```bash

@@ -19,7 +19,8 @@ jobs:
                               libgtest-dev \
                               libatlas-base-dev \
                               libeigen3-dev \
-                              libsuitesparse-dev 
+                              libsuitesparse-dev \
+                              libpcl-dev
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Ceres
