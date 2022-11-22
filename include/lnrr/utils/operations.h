@@ -121,7 +121,7 @@ std::vector<RigidTransform<T>> computeTransformations(const MatrixT<T>& G,
                 Eigen::AngleAxis<T>(angle, axis).toRotationMatrix();
         } else {
             T_lines[l].rot_mat.setIdentity();
-    }
+        }
     }
 
 #ifdef DEBUG
@@ -205,6 +205,39 @@ MatrixX3T<T> computeTransformedMoving(
     }
     assert(m == moving.rows());
     return transformed_moving;
+}
+
+template <typename T>
+void pclModelToEigen(const PointCloudPtr& cloud, MatrixX3T<T>& eigen_cloud) {
+    assert(!cloud->isOrganized()); // height == 1
+    eigen_cloud.resize(cloud->size(), 3);
+    for (size_t i = 0; i < cloud->size(); i++) {
+        eigen_cloud(i, 0) = cloud->points[i].x;
+        eigen_cloud(i, 1) = cloud->points[i].y;
+        eigen_cloud(i, 2) = cloud->points[i].z;
+    }
+}
+
+template <typename T>
+void pclScanToEigen(const std::vector<PointCloudPtr>& cloud,
+                    MatrixX3T<T>& eigen_cloud, VectorInt& line_sizes) {
+    int number_lines = cloud.size();
+    int number_points = 0;
+    for (size_t i = 0; i < number_lines; i++)
+        number_points += cloud[i]->size();
+    eigen_cloud.resize(number_points, 3);
+    line_sizes.resize(number_lines);
+    int m = 0;
+    for (size_t i = 0; i < number_lines; i++) {
+        line_sizes[i] = cloud[i]->size();
+        for (size_t j = 0; j < cloud[i]->size(); j++) {
+            eigen_cloud(m, 0) = cloud[i]->points[j].x;
+            eigen_cloud(m, 1) = cloud[i]->points[j].y;
+            eigen_cloud(m, 2) = cloud[i]->points[j].z;
+            m++;
+        }
+    }
+    assert(m == number_points);
 }
 
 } // namespace lnrr
