@@ -61,6 +61,33 @@ public:
         assert(line_sizes.sum() == moving.rows() &&
                "The vector line_sizes must agree with the number of points of "
                "each line in the scan");
+        assert(beta > 0.0 && "beta must be positive non-zero");
+        assert(lambda > 0.0 && "lambda must be positive non-zero");
+    }
+
+    ScanToModel(const PointCloudPtr& fixed,
+                const std::vector<PointCloudPtr>& moving, const double& beta,
+                const double& lambda)
+        : beta_(beta),
+          lambda_(lambda),
+          max_iterations_(DEFAULT_MAX_ITERATIONS),
+          outliers_(DEFAULT_OUTLIERS),
+          threshold_truncate_2_(DEFAULT_THRESHOLD_TRUNCATE),
+          sigma2_(DEFAULT_SIGMA2),
+          tolerance_(DEFAULT_TOLERANCE) {
+        assert(beta > 0.0 && "beta must be positive non-zero");
+        assert(lambda > 0.0 && "lambda must be positive non-zero");
+
+        pclModelToEigen(fixed, fixed_);
+        pclScanToEigen(moving, moving_, line_sizes_);
+        number_lines_ = line_sizes_.rows();
+
+        assert(line_sizes_.sum() == moving_.rows() &&
+               "The vector line_sizes must agree with the number of points of "
+               "each line in the scan");
+        assert(fixed_.rows() > 0 && "The model must have at least one point");
+        assert(moving_.rows() > 0 && "The scan must have at least one point");
+        assert(number_lines_ > 0 && "The scan must have at least one line");
     }
 
     ~ScanToModel() {}

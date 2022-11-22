@@ -4,7 +4,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif(CMAKE_BUILD_TYPE MATCHES Debug)
 
 add_library(Library-C++
-    STATIC
+    SHARED
     scan_to_model.cpp
     )
 set_target_properties(Library-C++ PROPERTIES
@@ -17,9 +17,11 @@ target_include_directories(Library-C++ PUBLIC
     "$<INSTALL_INTERFACE:include>"
     ${EIGEN3_INCLUDE_DIR} 
     ${CERES_INCLUDE_DIR}
+    ${PCL_INCLUDE_DIRS}
     )
 target_link_libraries(Library-C++
     PUBLIC
     Fgt::Library-C++
     ${CERES_LIBRARIES}
+    ${PCL_LIBRARIES}
     )

@@ -52,6 +52,48 @@ void writeResultToTxtFile(const std::string& file_name,
     file.close();
 }
 
+std::vector<PointCloudPtr> loadPCDFilesFromPath(const std::string& path) {
+    std::vector<PointCloudPtr> clouds;
+    std::vector<std::string> files;
+    boost::filesystem::path dir(path);
+    boost::filesystem::directory_iterator end_iter;
+    if (boost::filesystem::exists(dir) && boost::filesystem::is_directory(dir))
+        for (boost::filesystem::directory_iterator dir_itr(dir);
+             dir_itr != end_iter; ++dir_itr)
+            if (boost::filesystem::is_regular_file(dir_itr->status()))
+                files.push_back(dir_itr->path().string());
+    std::sort(files.begin(), files.end());
+    for (auto& file : files) {
+        PointCloudPtr cloud(new PointCloud);
+        pcl::io::loadPCDFile(file, *cloud);
+        clouds.push_back(cloud);
+    }
+    return clouds;
+}
+
+// wrote result to pcd file
+void eigenCloudToPCL(const MatrixX3& result, PointCloudPtr cloud) {
+    if (cloud == nullptr)
+        cloud.reset(new PointCloud);
+    cloud->width = result.rows();
+    cloud->height = 1;
+    cloud->points.resize(cloud->width * cloud->height);
+    for (size_t i = 0; i < result.rows(); i++) {
+        cloud->points[i].x = result(i, 0);
+        cloud->points[i].y = result(i, 1);
+        cloud->points[i].z = result(i, 2);
+    }
+}
+
+void writeResultToPCDFile(const std::string& file_name,
+                          const MatrixX3& result) {
+    PointCloudPtr cloud(new PointCloud);
+    eigenCloudToPCL(result, cloud);
+    pcl::io::savePCDFile(file_name, *cloud);
+}
+
+//////////////////////////////
+
 double generateRandomNumber(const double& min, const double& max) {
     // std::random_device r;
     // std::default_random_engine re{r()};

@@ -16,6 +16,7 @@ find_package(OpenMP REQUIRED)
 find_package(Eigen3 3.3.7 REQUIRED)
 find_package(Ceres 2.2 REQUIRED)
 find_package(Fgt REQUIRED)
+find_package(PCL 1.10 REQUIRED)
 
 add_subdirectory(src)
 
@@ -25,7 +26,7 @@ if(BUILD_TESTS)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(default_cmake_build_type "RelWithDebInfo")
+  set(default_cmake_build_type "Release")
   message("Setting build type to '${default_cmake_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_cmake_build_type}" CACHE
       STRING "Choose the type of build." FORCE)

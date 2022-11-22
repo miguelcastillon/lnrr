@@ -4,6 +4,8 @@
 #include <Eigen/Sparse>
 #include <chrono>
 
+#include <pcl/io/pcd_io.h>
+
 namespace lnrr {
 
 class lnrr_error : public std::runtime_error {
@@ -33,6 +35,9 @@ template <typename T>
 using VectorT = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 template <typename T>
 using Vector3T = Eigen::Matrix<T, 3, 1>;
+
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+typedef pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudPtr;
 
 template <typename T>
 struct RigidTransform {
