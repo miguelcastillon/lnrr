@@ -1,7 +1,5 @@
 # Linewise Non-Rigid Registration (LNRR)
 
-
-
 This repository provides a basic implementation of the non-rigid point cloud registration method described in [1].
 For a detailed explanation of the method and its motivation, please refer to the [original paper](https://doi.org/10.1109/LRA.2022.3180038).
 In a nutshell, the method is able to find the set of rigid transformations that need to be applied to *each line* in the scan in order to match an existing model:
@@ -106,13 +104,12 @@ sudo make uninstall
 #include <lnrr/scan_to_model.h>
 
 int main(int argc, char** argv) {
-    lnrr::Matrix fixed = loadModel();
-    lnrr::Matrix moving = loadScan();
-    lnrr::Vector line_sizes;  // Vector containing the number of points in each line
+    lnrr::PointCloudPtr fixed = loadModel();
+    std::vector<lnrr::PointCloudPtr> moving = loadScan();
     double beta = ...;
     double lambda = ...;
 
-    lnrr::ScanToModel lnrr(fixed, moving, beta, lambda, line_sizes);
+    lnrr::ScanToModel lnrr(fixed, moving, beta, lambda);
     lnrr::Result result = lnrr.run();
     return 0;
 }
