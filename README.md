@@ -87,11 +87,14 @@ make -jX
 sudo make install
 ```
 
-If you want Debug messages to be printed for each iteration, compile using
-```bash
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-```
+There are several options that you can pass to CMake:
+- `-DCMAKE_BUILD_TYPE=Debug` to get information for each iteration (default is Release).
+- `-DBUILD_TESTS=OFF` to disable the compilation of the tests (default is ON).
 
+If at any point you want to uninstall the library, just do:
+```bash
+sudo make uninstall
+```
 
 
 ## Usage
@@ -130,20 +133,27 @@ target_link_libraries(my-new-library
 
 Check the folder `examples` to see how to write a `.cpp` file and a `CMakeLists.txt` for your project.
 
-## Example
+### Example
 
-To run the code with the example model and scan in the folder `data`, you can just run the test. 
-From `examples/build`:
+There is an example in the `examples` folder.
+Inside, you can run
+```bash
+mkdir build 
+cd build 
+cmake .. 
+make -jX
+```
+Then, from `examples/build` you can run it like this:
 ```bash
 ./lnrr_example \
-    ../data/stanford-bunny_dense_occluded.txt \
-    ../data/scan.txt \
-    ../data/scan_linesizes.txt \
-    ../data/scan_registered.txt \
-    15 \
-    100 \
-    0.005
+    ../data/model.pcd \
+    ../data/scans/ \
+    ../data/output.pcd \
+    5 \
+    30000 \
+    0.03
 ```
+
 Converting between `.pcd` and `.txt` files is easy using PCL, but the code is not added here to limit the number of dependencies.
 
 ## Contributing
