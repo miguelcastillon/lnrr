@@ -1,7 +1,5 @@
 # Linewise Non-Rigid Registration (LNRR)
 
-
-
 This repository provides a basic implementation of the non-rigid point cloud registration method described in [1].
 For a detailed explanation of the method and its motivation, please refer to the [original paper](https://doi.org/10.1109/LRA.2022.3180038).
 In a nutshell, the method is able to find the set of rigid transformations that need to be applied to *each line* in the scan in order to match an existing model:
@@ -10,8 +8,11 @@ In a nutshell, the method is able to find the set of rigid transformations that 
 
 You can also watch the video that summarizes this work:
 
-[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/sddefault.jpg)](https://youtu.be/4QDZ7z1WER8)
+[![Watch the video](https://img.youtube.com/vi/4QDZ7z1WER8/mqdefault.jpg)](https://youtu.be/4QDZ7z1WER8)
 
+Additionally, you can watch the presentation of this work at IROS 2022:
+
+[![Watch the video](https://img.youtube.com/vi/tp0ob9yHagQ/mqdefault.jpg)](https://youtu.be/tp0ob9yHagQ)
 
 Thank you for citing the original publication [1] if you use our method in academic work:
 ```
@@ -39,29 +40,62 @@ If you want to know more about our underwater 3D scanner, check out [the paper](
 
 ### Dependencies
 
-Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), and [Ceres](http://ceres-solver.org/index.html).
-Please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + Ceres 2.0.
-
+Our methods depends on [CMake](https://cmake.org/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), [PCL](https://pointclouds.org/) and [Ceres](http://ceres-solver.org/index.html) [please note that so far, it has only been tested on Ubuntu 20.04 + Eigen 3.3.7 + PCL 1.10 + Ceres 2.2.]
 Moreover, our method uses Fast Gauss Transforms to compute the correspondence probability between each pair of points.
 Therefore, our method depends on
 [fgt](https://github.com/miguelcastillon/fgt_threshold), which is a fork of [this repository](https://github.com/gadomski/fgt).
+
+In summary, first do:
+```bash
+sudo apt install \
+    cmake \
+    libeigen3-dev \
+    libpcl-dev
+```
+Then, in your `libraries` folder, compile Ceres:
+```bash
+git clone https://ceres-solver.googlesource.com/ceres-solver
+cd ceres-solver && mkdir build && cd build
+cmake .. \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_EXAMPLES=OFF
+make -jX 
+sudo make install
+cd ../..
+```
+Then compile fgt:
+```bash
+git clone https://github.com/miguelcastillon/fgt_threshold
+cd fgt_threshold && mkdir build && cd build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_OPENMP=ON \
+    -DBUILD_SHARED_LIBS=ON \
+    -DWITH_TESTS=OFF
+make -jX 
+sudo make install
+cd ../..
+```
 
 ### Compilation
 As usual, just download and unzip this repository in your preferred location and `cd` into it.
 Then:
 ```bash
-mkdir build
-cd build
-cmake ..
-make
+git clone https://github.com/miguelcastillon/lnrr
+cd lnrr && mkdir build && cd build
+cmake [OPTIONS] .. 
+make -jX 
 sudo make install
 ```
 
-If you want Debug messages to be printed for each iteration, compile using
-```bash
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-```
+There are several options that you can pass to CMake:
+- `-DCMAKE_BUILD_TYPE=Debug` to get information for each iteration (default is Release).
+- `-DBUILD_TESTS=OFF` to disable the compilation of the tests (default is ON).
 
+If at any point you want to uninstall the library, just do:
+```bash
+sudo make uninstall
+```
 
 
 ## Usage
@@ -70,13 +104,12 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 #include <lnrr/scan_to_model.h>
 
 int main(int argc, char** argv) {
-    lnrr::Matrix fixed = loadModel();
-    lnrr::Matrix moving = loadScan();
-    lnrr::Vector line_sizes;  // Vector containing the number of points in each line
+    lnrr::PointCloudPtr fixed = loadModel();
+    std::vector<lnrr::PointCloudPtr> moving = loadScan();
     double beta = ...;
     double lambda = ...;
 
-    lnrr::ScanToModel lnrr(fixed, moving, beta, lambda, line_sizes);
+    lnrr::ScanToModel lnrr(fixed, moving, beta, lambda);
     lnrr::Result result = lnrr.run();
     return 0;
 }
@@ -95,17 +128,31 @@ add_library(my-new-library
 target_link_libraries(my-new-library
     PUBLIC
     Lnrr::Library-C++
-    ${CERES_LIBRARIES}
     )
 ```
 
-## Example
+Check the folder `examples` to see how to write a `.cpp` file and a `CMakeLists.txt` for your project.
 
-To run the code with the example model and scan in the folder `data`, you can just run the test:
+### Example
+
+There is an example in the `examples` folder.
+Inside, you can run
 ```bash
-./test_lnrr data/stanford-bunny_dense_occluded.txt data/scan.txt data/scan_linesizes.txt data/scan_registered.txt 15 100 0.005
+mkdir build 
+cd build 
+cmake .. 
+make -jX
 ```
-Converting between `.pcd` and `.txt` files is easy using PCL, but the code is not added here to limit the number of dependencies.
+Then, from `examples/build` you can run it like this:
+```bash
+./lnrr_example \
+    ../data/model.pcd \
+    ../data/scans/ \
+    ../data/output.pcd \
+    5 \
+    30000 \
+    0.03
+```
 
 ## Contributing
 

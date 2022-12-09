@@ -1,9 +1,9 @@
 #pragma once
 
-#include <lnrr/ceres/cost_U_scan_to_model.h>
+#include <lnrr/ceres/cost_W.h>
 #include <lnrr/utils/conversions.h>
+#include <lnrr/utils/operations.h>
 #include <lnrr/utils/types.h>
-#include <lnrr/utils/utils.h>
 
 #include <fgt.hpp>
 
@@ -21,51 +21,33 @@ private:
     MatrixX3 fixed_;
     MatrixX3 moving_;
     MatrixX3 moving_transformed_;
-    SparseMatrix YD_;
-
-    Matrix G_;
-    SparseMatrix F_;
-    SparseMatrix FT_;
-    Matrix FG_;
-    SparseMatrix H_;
-
-    MatrixX3 A_;
-    Matrix B_;
-    Matrix GB_;
-    MatrixX3 C_;
-    SparseMatrix D_;
-
-    MatrixX3 U_; // rotation
-    MatrixX3 V_; // translation
-
-    MatrixX3 RT_; // tranpose of the rotation matrices
 
     Probabilities P_;
+
+    Matrix G_;
+    Sparse jacobianG_;
+    MatrixX6 W_;
 
     double fgt_epsilon_ = FGT_EPSILON;
     double fgt_threshold_ = FGT_THRESHOLD;
 
     double beta_;
     double lambda_;
-    Vector line_sizes_;
+    VectorInt line_sizes_;
     int number_lines_;
     size_t max_iterations_;
     double outliers_;
-    double threshold_truncate_;
+    double threshold_truncate_2_;
     double sigma2_;
     double tolerance_;
 
     double defaultSigma2();
     void computeSigma2();
-    void computeP();
-    void computeP_FGT();
-    void computeU();
-    void computeOptimalRotationCeres(const Matrix& S, const Matrix& T);
 
 public:
     ScanToModel(const MatrixX3& fixed, const MatrixX3& moving,
                 const double& beta, const double& lambda,
-                const Vector& line_sizes)
+                const VectorInt& line_sizes)
         : fixed_(fixed),
           moving_(moving),
           beta_(beta),
@@ -74,26 +56,58 @@ public:
           number_lines_(line_sizes.rows()),
           max_iterations_(DEFAULT_MAX_ITERATIONS),
           outliers_(DEFAULT_OUTLIERS),
-          threshold_truncate_(DEFAULT_THRESHOLD_TRUNCATE),
+          threshold_truncate_2_(DEFAULT_THRESHOLD_TRUNCATE),
           sigma2_(DEFAULT_SIGMA2),
           tolerance_(DEFAULT_TOLERANCE) {
         assert(line_sizes.sum() == moving.rows() &&
                "The vector line_sizes must agree with the number of points of "
                "each line in the scan");
+        assert(beta > 0.0 && "beta must be positive non-zero");
+        assert(lambda > 0.0 && "lambda must be positive non-zero");
+    }
+
+    ScanToModel(const PointCloudPtr& fixed,
+                const std::vector<PointCloudPtr>& moving, const double& beta,
+                const double& lambda)
+        : beta_(beta),
+          lambda_(lambda),
+          max_iterations_(DEFAULT_MAX_ITERATIONS),
+          outliers_(DEFAULT_OUTLIERS),
+          threshold_truncate_2_(DEFAULT_THRESHOLD_TRUNCATE),
+          sigma2_(DEFAULT_SIGMA2),
+          tolerance_(DEFAULT_TOLERANCE) {
+        assert(beta > 0.0 && "beta must be positive non-zero");
+        assert(lambda > 0.0 && "lambda must be positive non-zero");
+
+        pclModelToEigen(fixed, fixed_);
+        pclScanToEigen(moving, moving_, line_sizes_);
+        number_lines_ = line_sizes_.rows();
+
+        assert(line_sizes_.sum() == moving_.rows() &&
+               "The vector line_sizes must agree with the number of points of "
+               "each line in the scan");
+        assert(fixed_.rows() > 0 && "The model must have at least one point");
+        assert(moving_.rows() > 0 && "The scan must have at least one point");
+        assert(number_lines_ > 0 && "The scan must have at least one line");
     }
 
     ~ScanToModel() {}
 
     void initialize();
+    void computeP();
+    void computeP_FGT();
+    void computeW();
     void computeOne();
-    Matrix getTransformedMoving();
+    MatrixX3 getTransformedMoving() {
+        return computeTransformedMoving(moving_, G_, W_, line_sizes_);
+    }
     Result run();
 
     // Set functions
-
+    void setP(const Probabilities& P) { P_ = P; }
     void setFixed(const MatrixX3& fixed) { fixed_ = fixed; }
     void setMoving(const MatrixX3& moving) { moving_ = moving; }
-    void setLineSizes(const Vector& line_sizes) {
+    void setLineSizes(const VectorInt& line_sizes) {
         line_sizes_ = line_sizes;
         number_lines_ = line_sizes.rows();
     }
@@ -105,22 +119,23 @@ public:
     }
     void setOutlierRate(const double& outliers) { outliers_ = outliers; }
     void setThresholdTruncate(const double& threshold) {
-        threshold_truncate_ = threshold;
+        threshold_truncate_2_ = pow(threshold, 2);
     }
     void setSigma2(const double& sigma2) { sigma2_ = sigma2; }
     void setTolerance(const double& tolerance) { tolerance_ = tolerance; }
 
     // Get functions
-
+    Probabilities getP() { return P_; }
+    MatrixX6 getW() { return W_; }
     MatrixX3 getFixed() { return fixed_; }
     MatrixX3 getMoving() { return moving_; }
-    Vector getLineSizes() { return line_sizes_; }
+    VectorInt getLineSizes() { return line_sizes_; }
     int getNumberLines() { return number_lines_; }
     double getBeta() { return beta_; }
     double getLambda() { return lambda_; }
     size_t getMaxIterations() { return max_iterations_; }
     double getOutlierRate() { return outliers_; }
-    double getThresholdTruncate() { return threshold_truncate_; }
+    double getThresholdTruncate() { return threshold_truncate_2_; }
     double getSigma2() { return sigma2_; }
     double getTolerance() { return tolerance_; }
 };

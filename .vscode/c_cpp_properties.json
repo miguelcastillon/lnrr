@@ -4,9 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/include/**",
+                "${workspaceFolder}/extern/**",
                 "/usr/include/**",
                 "/usr/local/include/**",
-                "/home/user/libraries/**"
+                "/home/miguel/libraries/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
